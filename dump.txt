@@ -1,0 +1,65 @@
+
+    // filters = [],
+    // sorts = [],
+    // onFilterChange,
+    // onSortChange,
+
+    // const [selectedFilter, setSelectedFilter] = useState(filters[0]?.value || "");
+    // const [selectedSort, setSelectedSort] = useState(sorts[0]?.value || "");
+
+    // const [filterOpen, setFilterOpen] = useState(false);
+    // const [sortOpen, setSortOpen] = useState(false);
+
+{/* Filter Dropdown */}
+            {/* {filters.length > 0 && (
+                <div className="relative">
+                    <button
+                        onClick={() => setFilterOpen(!filterOpen)}
+                        className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-white/[0.05] dark:text-gray-300 dark:hover:bg-white/[0.08]"
+                    >
+                        {filters.find((f) => f.value === selectedFilter)?.label || "Filter"}
+                    </button>
+                    <Dropdown isOpen={filterOpen} onClose={() => setFilterOpen(false)} className="mt-2 w-44 p-2">
+                        {filters.map((filter) => (
+                            <DropdownItem
+                                key={filter.value}
+                                onItemClick={() => {
+                                    setSelectedFilter(filter.value);
+                                    setFilterOpen(false);
+                                    onFilterChange?.(filter.value);
+                                }}
+                                className="flex w-full text-left text-gray-600 rounded-md hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/[0.05]"
+                            >
+                                {filter.label}
+                            </DropdownItem>
+                        ))}
+                    </Dropdown>
+                </div>
+            )} */}
+
+            {/* Sort Dropdown */}
+            {/* {sorts.length > 0 && (
+                <div className="relative">
+                    <button
+                        onClick={() => setSortOpen(!sortOpen)}
+                        className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-white/[0.05] dark:text-gray-300 dark:hover:bg-white/[0.08]"
+                    >
+                        {sorts.find((s) => s.value === selectedSort)?.label || "Sort"}
+                    </button>
+                    <Dropdown isOpen={sortOpen} onClose={() => setSortOpen(false)} className="mt-2 w-44 p-2">
+                        {sorts.map((sort) => (
+                            <DropdownItem
+                                key={sort.value}
+                                onItemClick={() => {
+                                    setSelectedSort(sort.value);
+                                    setSortOpen(false);
+                                    onSortChange?.(sort.value);
+                                }}
+                                className="flex w-full text-left text-gray-600 rounded-md hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/[0.05]"
+                            >
+                                {sort.label}
+                            </DropdownItem>
+                        ))}
+                    </Dropdown>
+                </div>
+            )} */}

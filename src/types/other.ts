@@ -1,0 +1,1 @@
+export type IntervalType = "daily" | "monthly" | "quarterly" | "yearly";

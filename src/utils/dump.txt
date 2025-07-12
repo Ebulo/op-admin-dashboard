@@ -1,0 +1,729 @@
+// // hooks/usePublisherAnalytics.ts
+// "use client";
+// import { useState, useEffect } from "react";
+// import useSWR from 'swr';
+// import { toast } from "react-hot-toast";
+// import { getToken } from "@/api/authApi";
+// import { config } from "@/config/config";
+// import { IntervalType } from "@/types/other";
+// import { useDateRange } from "@/context/DateRangeContext";
+
+// export interface PublisherStats {
+//     publisher_email: string;
+//     postback_counts: Record<string, number>;
+//     total_revenue_usd: number;
+//     total_live_offers: number;
+// }
+
+// export interface RevenueEntry {
+//     period: string;
+//     total_revenue_usd: number;
+// }
+
+// export interface MonthlyRevenue {
+//     [source: string]: RevenueEntry[];
+// }
+
+// export interface CompletedEntry {
+//     period: string;
+//     completed_count: number;
+// }
+
+// export interface CompletedStats {
+//     [source: string]: CompletedEntry[];
+// }
+
+// const fetcher = async (url: string) => {
+//     const token = getToken();
+//     if (!token) {
+//         // We handle the "Not authenticated" toast outside, where SWR errors are processed.
+//         // Throwing an error here will be caught by SWR's error handling.
+//         throw new Error("Not authenticated");
+//     }
+
+//     const res = await fetch(url, {
+//         headers: { Authorization: `Bearer ${token}` },
+//     });
+
+//     if (!res.ok) {
+//         const errorData = await res.json().catch(() => ({ message: "API error with no JSON response" }));
+//         throw new Error(errorData.message || `API error: ${res.status}`);
+//     }
+//     return res.json();
+// };
+
+// export const usePublisherAnalytics = () => {
+//     const [interval, setInterval] = useState<IntervalType>("daily");
+//     const { startDate, endDate } = useDateRange();
+
+//     const formatDate = (d: Date | null) => d?.toISOString().split("T")[0];
+//     const dateParams = startDate && endDate
+//         ? `&start_date=${formatDate(startDate)}&end_date=${formatDate(endDate)}`
+//         : "";
+
+//     const token = getToken(); // Get token once to determine if we should attempt to fetch
+
+//     const statsUrl = token ? `${config.apiBaseUrl}/analytics/publisher_stats/?interval=${interval}${dateParams}` : null;
+//     const revenueUrl = token ? `${config.apiBaseUrl}/analytics/pub_revenue/?interval=${interval}${dateParams}` : null;
+//     const completedUrl = token ? `${config.apiBaseUrl}/analytics/pub_completed_postbacks/?interval=${interval}${dateParams}` : null;
+
+//     const { data: stats, error: statsError, isLoading: statsLoading, isValidating: statsValidating } = useSWR<PublisherStats>(statsUrl, fetcher);
+//     const { data: revenue, error: revenueError, isLoading: revenueLoading, isValidating: revenueValidating } = useSWR<MonthlyRevenue>(revenueUrl, fetcher);
+//     const { data: completed, error: completedError, isLoading: completedLoading, isValidating: completedValidating } = useSWR<CompletedStats>(completedUrl, fetcher);
+
+//     const loading = statsLoading || revenueLoading || completedLoading || statsValidating || revenueValidating || completedValidating;
+
+//     // Effect for handling errors globally
+//     useEffect(() => {
+//         const errors = [statsError, revenueError, completedError].filter(Boolean);
+//         if (errors.length > 0) {
+//             // Display the first error
+//             const errorMessage = errors[0] instanceof Error ? errors[0].message : String(errors[0]);
+//             if (errorMessage === "Not authenticated" && !getToken()) {
+//                 toast.error("Not authenticated. Please sign in.");
+//             } else {
+//                 toast.error(errorMessage || "Failed to fetch analytics");
+//             }
+//         }
+//     }, [statsError, revenueError, completedError]);
+
+//     // Handle initial authentication check more explicitly if no token at hook init
+//     useEffect(() => {
+//         if (!token) {
+//             toast.error("Not authenticated. Please sign in.");
+//         }
+//     }, [token]);
+
+
+//     return { 
+//         stats: stats || null, 
+//         revenue: revenue || {}, 
+//         completed: completed || {}, 
+//         loading, 
+//         interval, 
+//         setInterval 
+//     };
+// };
+// hooks/usePublisherAnalytics.ts
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+// "use client";
+// import { useState, useEffect } from "react";
+// import useSWR from 'swr';
+// import { toast } from "react-hot-toast";
+// import { getToken, logout } from "@/api/authApi";
+// import { config } from "@/config/config";
+// import { IntervalType } from "@/types/other";
+// import { useDateRange } from "@/context/DateRangeContext";
+// // import { useAnalyticsStore } from "@/stores/useAnalyticsStore";
+
+// export interface PublisherStats {
+//     publisher_email: string;
+//     postback_counts: Record<string, number>;
+//     total_revenue_usd: number;
+//     total_live_offers: number;
+// }
+
+// export interface RevenueEntry {
+//     period: string;
+//     total_revenue_usd: number;
+// }
+
+// // export interface MonthlyRevenue {
+// //     [source: string]: RevenueEntry[];
+// // }
+
+// export interface CompletedEntry {
+//     period: string;
+//     completed_count: number;
+// }
+
+// // export interface CompletedStats {
+// //     [source: string]: CompletedEntry[];
+// // }
+
+// export type MonthlyRevenue = RevenueEntry[];
+// export type CompletedStats = CompletedEntry[];
+
+// const fetcher = async (url: string) => {
+//     const token = getToken();
+//     if (!token) {
+//         // We handle the "Not authenticated" toast outside, where SWR errors are processed.
+//         // Throwing an error here will be caught by SWR's error handling.
+//         throw new Error("Not authenticated");
+//     }
+
+//     const res = await fetch(url, {
+//         headers: { Authorization: `Bearer ${token}` },
+//     });
+
+//     if (res.status === 401) {
+//         logout();
+//         throw new Error("Unauthorized");
+//     }
+
+//     if (!res.ok) {
+//         const errorData = await res.json().catch(() => ({ message: "API error with no JSON response" }));
+//         throw new Error(errorData.message || `API error: ${res.status}`);
+//     }
+//     return res.json();
+// };
+
+// export const usePublisherAnalytics = () => {
+//     const [interval, setInterval] = useState<IntervalType>("daily");
+//     //////////////////////////////////
+//     // const store = useAnalyticsStore();
+//     const { startDate, endDate } = useDateRange();
+
+//     const formatDate = (d: Date | null) => d?.toISOString().split("T")[0];
+//     const dateParams = startDate && endDate
+//         ? `&start_date=${formatDate(startDate)}&end_date=${formatDate(endDate)}`
+//         : "";
+
+//     const token = getToken(); // Get token once to determine if we should attempt to fetch
+
+//     const statsUrl = token ? `${config.apiBaseUrl}/analytics/publisher_stats/?interval=${interval}${dateParams}` : null;
+//     const revenueUrl = token ? `${config.apiBaseUrl}/analytics/pub_revenue/?interval=${interval}${dateParams}` : null;
+//     const completedUrl = token ? `${config.apiBaseUrl}/analytics/pub_completed_postbacks/?interval=${interval}${dateParams}` : null;
+
+//     const { data: stats, error: statsError, isLoading: statsLoading, isValidating: statsValidating } = useSWR<PublisherStats>(statsUrl, fetcher);
+//     const { data: revenue, error: revenueError, isLoading: revenueLoading, isValidating: revenueValidating } = useSWR<MonthlyRevenue>(revenueUrl, fetcher);
+//     const { data: completed, error: completedError, isLoading: completedLoading, isValidating: completedValidating } = useSWR<CompletedStats>(completedUrl, fetcher);
+
+//     const loading = statsLoading || revenueLoading || completedLoading || statsValidating || revenueValidating || completedValidating;
+
+//     // Effect for handling errors globally
+//     useEffect(() => {
+//         const errors = [statsError, revenueError, completedError].filter(Boolean);
+//         if (errors.length > 0) {
+//             // Display the first error
+//             const errorMessage = errors[0] instanceof Error ? errors[0].message : String(errors[0]);
+//             if (errorMessage === "Not authenticated" && !getToken()) {
+//                 toast.error("Not authenticated. Please sign in.");
+//             } else {
+//                 toast.error(errorMessage || "Failed to fetch analytics");
+//             }
+//         }
+//     }, [statsError, revenueError, completedError]);
+
+//     // Handle initial authentication check more explicitly if no token at hook init
+//     useEffect(() => {
+//         if (!token) {
+//             toast.error("Not authenticated. Please sign in.");
+//         }
+//     }, [token]);
+
+
+//     // return {
+//     //     stats: stats || null,
+//     //     revenue: revenue || {},
+//     //     completed: completed || {},
+//     //     loading,
+//     //     interval,
+//     //     setInterval
+//     // };
+//     return {
+//         stats: stats || null,
+//         revenue: revenue || [],  // was {}
+//         completed: completed || [],  // was {}
+//         loading,
+//         interval,
+//         setInterval
+//     };
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+// import { useState, useEffect } from "react";
+// import { toast } from "react-hot-toast";
+// import { getToken, logout } from "@/api/authApi";
+// import { config } from "@/config/config";
+// import { IntervalType } from "@/types/other";
+// import { useDateRange } from "@/context/DateRangeContext";
+
+// declare global {
+//     interface Window {
+//         __analyticsCache__?: {
+//             key: string;
+//             stats: PublisherStats | null;
+//             revenue: MonthlyRevenue;
+//             completed: CompletedStats;
+//         };
+//     }
+// }
+
+// // TYPES
+// export interface PublisherStats {
+//     publisher_email: string;
+//     postback_counts: Record<string, number>;
+//     total_revenue_usd: number;
+//     total_live_offers: number;
+// }
+
+// export interface RevenueEntry {
+//     period: string;
+//     total_revenue_usd: number;
+// }
+
+// export interface CompletedEntry {
+//     period: string;
+//     completed_count: number;
+// }
+
+// export type MonthlyRevenue = RevenueEntry[];
+// export type CompletedStats = CompletedEntry[];
+
+// // GLOBAL CACHE
+// // let cachedStats: PublisherStats | null = null;
+// // let cachedRevenue: MonthlyRevenue = [];
+// // let cachedCompleted: CompletedStats = [];
+// // let cachedKey: string | null = null;
+
+// // const getCache = () => window.__analyticsCache__;
+// // const setCache = (key: string, stats: PublisherStats, revenue: MonthlyRevenue, completed: CompletedStats) => {
+// //     window.__analyticsCache__ = { key, stats, revenue, completed };
+// // };
+// export const getCache = (): typeof window.__analyticsCache__ => {
+//     if (typeof window === "undefined") return undefined;
+//     return window.__analyticsCache__;
+// };
+
+// export const setCache = (
+//     key: string,
+//     stats: PublisherStats,
+//     revenue: MonthlyRevenue,
+//     completed: CompletedStats
+// ): void => {
+//     if (typeof window === "undefined") return;
+//     window.__analyticsCache__ = { key, stats, revenue, completed };
+// };
+
+// // HELPER
+// const fetchDataWithAuth = async (url: string) => {
+//     const token = getToken();
+//     if (!token) throw new Error("Unauthorized");
+
+//     const res = await fetch(url, {
+//         headers: { Authorization: `Bearer ${token}` },
+//     });
+
+//     if (res.status === 401) {
+//         logout();
+//         throw new Error("Unauthorized");
+//     }
+
+//     if (!res.ok) {
+//         const err = await res.json().catch(() => ({}));
+//         throw new Error(err.message || `API error: ${res.status}`);
+//     }
+
+//     return res.json();
+// };
+
+// function isErrorWithMessage(error: unknown): error is { message: string } {
+//     return (
+//         typeof error === "object" &&
+//         error !== null &&
+//         "message" in error &&
+//         typeof (error as { message: unknown }).message === "string"
+//     );
+// }
+
+// // MAIN HOOK
+// // export const usePublisherAnalytics = () => {
+// //     const { startDate, endDate } = useDateRange();
+// //     const [interval, setInterval] = useState<IntervalType>("daily");
+// //     const [loading, setLoading] = useState(false);
+
+// //     const [stats, setStats] = useState<PublisherStats | null>(cachedStats);
+// //     const [revenue, setRevenue] = useState<MonthlyRevenue>(cachedRevenue);
+// //     const [completed, setCompleted] = useState<CompletedStats>(cachedCompleted);
+
+// //     const formatDate = (d: Date | null) => d?.toISOString().split("T")[0] ?? "";
+// //     const key = `${interval}-${formatDate(startDate)}-${formatDate(endDate)}`;
+// //     const shouldFetch = key !== cachedKey;
+
+// //     useEffect(() => {
+// //         if (!shouldFetch) return;
+
+// //         const token = getToken();
+// //         if (!token) {
+// //             toast.error("Not authenticated. Please sign in.");
+// //             logout();
+// //             return;
+// //         }
+
+// //         const fetchAnalytics = async () => {
+// //             setLoading(true);
+// //             try {
+// //                 const dateParams =
+// //                     startDate && endDate
+// //                         ? `&start_date=${formatDate(startDate)}&end_date=${formatDate(endDate)}`
+// //                         : "";
+
+// //                 const [fetchedStats, fetchedRevenue, fetchedCompleted] = await Promise.all([
+// //                     fetchDataWithAuth(`${config.apiBaseUrl}/analytics/publisher_stats/?interval=${interval}${dateParams}`),
+// //                     fetchDataWithAuth(`${config.apiBaseUrl}/analytics/pub_revenue/?interval=${interval}${dateParams}`),
+// //                     fetchDataWithAuth(`${config.apiBaseUrl}/analytics/pub_completed_postbacks/?interval=${interval}${dateParams}`),
+// //                 ]);
+
+// //                 // Cache globally
+// //                 cachedStats = fetchedStats;
+// //                 cachedRevenue = fetchedRevenue;
+// //                 cachedCompleted = fetchedCompleted;
+// //                 cachedKey = key;
+
+// //                 // Set locally
+// //                 setStats(fetchedStats);
+// //                 setRevenue(fetchedRevenue);
+// //                 setCompleted(fetchedCompleted);
+// //             } catch (err: unknown) {
+// //                 if (isErrorWithMessage(err)) {
+// //                     if (err.message === "Unauthorized") {
+// //                         logout();
+// //                     } else {
+// //                         toast.error(err.message || "Failed to fetch analytics.");
+// //                     }
+// //                 } else {
+// //                     toast.error("An unexpected error occurred.");
+// //                 }
+// //             } finally {
+// //                 setLoading(false);
+// //             }
+// //         };
+
+// //         fetchAnalytics();
+// //     }, [interval, startDate, endDate]);
+
+// //     return {
+// //         stats,
+// //         revenue,
+// //         completed,
+// //         loading,
+// //         interval,
+// //         setInterval,
+// //     };
+// // };
+
+// export const usePublisherAnalytics = () => {
+//     const { startDate, endDate } = useDateRange();
+//     const [interval, setInterval] = useState<IntervalType>("daily");
+//     const [loading, setLoading] = useState(false);
+
+//     const [stats, setStats] = useState<PublisherStats | null>(null);
+//     const [revenue, setRevenue] = useState<MonthlyRevenue>([]);
+//     const [completed, setCompleted] = useState<CompletedStats>([]);
+
+//     const formatDate = (d: Date | null) => d?.toISOString().split("T")[0] ?? "";
+//     const key = `${interval}-${formatDate(startDate)}-${formatDate(endDate)}`;
+//     const cache = getCache();
+
+//     useEffect(() => {
+//         if (cache?.key === key) {
+//             setStats(cache.stats);
+//             setRevenue(cache.revenue);
+//             setCompleted(cache.completed);
+//             return;
+//         }
+
+//         const token = getToken();
+//         if (!token) {
+//             toast.error("Not authenticated. Please sign in.");
+//             logout();
+//             return;
+//         }
+
+//         const fetchAnalytics = async () => {
+//             setLoading(true);
+//             try {
+//                 const dateParams =
+//                     startDate && endDate
+//                         ? `&start_date=${formatDate(startDate)}&end_date=${formatDate(endDate)}`
+//                         : "";
+
+//                 const [fetchedStats, fetchedRevenue, fetchedCompleted] = await Promise.all([
+//                     fetchDataWithAuth(`${config.apiBaseUrl}/analytics/publisher_stats/?interval=${interval}${dateParams}`),
+//                     fetchDataWithAuth(`${config.apiBaseUrl}/analytics/pub_revenue/?interval=${interval}${dateParams}`),
+//                     fetchDataWithAuth(`${config.apiBaseUrl}/analytics/pub_completed_postbacks/?interval=${interval}${dateParams}`),
+//                 ]);
+
+//                 setStats(fetchedStats);
+//                 setRevenue(fetchedRevenue);
+//                 setCompleted(fetchedCompleted);
+//                 setCache(key, fetchedStats, fetchedRevenue, fetchedCompleted);
+//             } catch (err: unknown) {
+//                 if (isErrorWithMessage(err)) {
+//                     if (err.message === "Unauthorized") {
+//                         logout();
+//                     } else {
+//                         toast.error(err.message || "Failed to fetch analytics.");
+//                     }
+//                 } else {
+//                     toast.error("Unexpected error occurred.");
+//                 }
+//             } finally {
+//                 setLoading(false);
+//             }
+//         };
+
+//         fetchAnalytics();
+//     }, [interval, startDate, endDate]);
+
+//     return {
+//         stats,
+//         revenue,
+//         completed,
+//         loading,
+//         interval,
+//         setInterval,
+//     };
+// };
+
+
+
+
+// export const usePublisherAnalytics = () => {
+//     const { startDate, endDate } = useDateRange();
+//     const [interval, setInterval] = useState<IntervalType>("daily");
+//     const [loading, setLoading] = useState(false);
+
+//     const [stats, setStats] = useState<PublisherStats | null>(null);
+//     const [revenue, setRevenue] = useState<MonthlyRevenue>([]);
+//     const [completed, setCompleted] = useState<CompletedStats>([]);
+
+//     const formatDate = (d: Date | null) => d?.toISOString().split("T")[0] ?? "";
+//     const key = `${interval}-${formatDate(startDate)}-${formatDate(endDate)}`;
+//     const cache = getCache();
+
+//     useEffect(() => {
+//         if (cache?.key === key) {
+//             setStats(cache.stats);
+//             setRevenue(cache.revenue);
+//             setCompleted(cache.completed);
+//             return;
+//         }
+
+//         const token = getToken();
+//         if (!token) {
+//             toast.error("Not authenticated. Please sign in.");
+//             logout();
+//             return;
+//         }
+
+//         const fetchAnalytics = async () => {
+//             setLoading(true);
+//             try {
+//                 const dateParams =
+//                     startDate && endDate
+//                         ? `&start_date=${formatDate(startDate)}&end_date=${formatDate(endDate)}`
+//                         : "";
+
+//                 const [fetchedStats, fetchedRevenue, fetchedCompleted] = await Promise.all([
+//                     fetchDataWithAuth(`${config.apiBaseUrl}/analytics/publisher_stats/?interval=${interval}${dateParams}`),
+//                     fetchDataWithAuth(`${config.apiBaseUrl}/analytics/pub_revenue/?interval=${interval}${dateParams}`),
+//                     fetchDataWithAuth(`${config.apiBaseUrl}/analytics/pub_completed_postbacks/?interval=${interval}${dateParams}`),
+//                 ]);
+
+//                 setStats(fetchedStats);
+//                 setRevenue(fetchedRevenue);
+//                 setCompleted(fetchedCompleted);
+//                 setCache(key, fetchedStats, fetchedRevenue, fetchedCompleted);
+//             } catch (err: unknown) {
+//                 if (isErrorWithMessage(err)) {
+//                     if (err.message === "Unauthorized") {
+//                         logout();
+//                     } else {
+//                         toast.error(err.message || "Failed to fetch analytics.");
+//                     }
+//                 } else {
+//                     toast.error("Unexpected error occurred.");
+//                 }
+//             } finally {
+//                 setLoading(false);
+//             }
+//         };
+
+//         fetchAnalytics();
+//     }, [interval, startDate, endDate]);
+
+//     return {
+//         stats,
+//         revenue,
+//         completed,
+//         loading,
+//         interval,
+//         setInterval,
+//     };
+// };
+
+
+
+// "use client";
+// import { useState, useEffect } from "react";
+// import { toast } from "react-hot-toast";
+// import { getToken, logout } from "@/api/authApi";
+// import { config } from "@/config/config";
+// import { IntervalType } from "@/types/other";
+// import { useDateRange } from "@/context/DateRangeContext";
+
+// // TYPES
+// export interface PublisherStats {
+//     publisher_email: string;
+//     postback_counts: Record<string, number>;
+//     total_revenue_usd: number;
+//     total_live_offers: number;
+// }
+// export interface RevenueEntry {
+//     period: string;
+//     total_revenue_usd: number;
+// }
+// export interface CompletedEntry {
+//     period: string;
+//     completed_count: number;
+// }
+// export type MonthlyRevenue = RevenueEntry[];
+// export type CompletedStats = CompletedEntry[];
+
+// // Declare global cache type
+// // declare global {
+// //     interface Window {
+// //         __analyticsCache__?: {
+// //             key: string;
+// //             stats: PublisherStats | null;
+// //             revenue: MonthlyRevenue;
+// //             completed: CompletedStats;
+// //         };
+// //     }
+// // }
+
+// // Helpers
+// const getCache = () => {
+//     if (typeof window !== "undefined") {
+//         return window.__analyticsCache__;
+//     }
+//     return undefined;
+// };
+
+// const setCache = (
+//     key: string,
+//     stats: PublisherStats,
+//     revenue: MonthlyRevenue,
+//     completed: CompletedStats
+// ) => {
+//     if (typeof window !== "undefined") {
+//         window.__analyticsCache__ = { key, stats, revenue, completed };
+//     }
+// };
+
+// const formatDate = (d: Date | null) => d?.toISOString().split("T")[0] ?? "";
+
+// const fetchDataWithAuth = async (url: string) => {
+//     const token = getToken();
+//     if (!token) throw new Error("Unauthorized");
+
+//     const res = await fetch(url, {
+//         headers: { Authorization: `Bearer ${token}` },
+//     });
+
+//     if (res.status === 401) {
+//         logout();
+//         throw new Error("Unauthorized");
+//     }
+
+//     if (!res.ok) {
+//         const err = await res.json().catch(() => ({}));
+//         throw new Error(err.message || `API error: ${res.status}`);
+//     }
+
+//     return res.json();
+// };
+
+// function isErrorWithMessage(error: unknown): error is { message: string } {
+//     return typeof error === "object" && error !== null && "message" in error;
+// }
+
+// // MAIN HOOK
+// export const usePublisherAnalytics = () => {
+//     const { startDate, endDate } = useDateRange();
+//     const [interval, setInterval] = useState<IntervalType>("daily");
+//     const [loading, setLoading] = useState(false);
+
+//     const [stats, setStats] = useState<PublisherStats | null>(null);
+//     const [revenue, setRevenue] = useState<MonthlyRevenue>([]);
+//     const [completed, setCompleted] = useState<CompletedStats>([]);
+
+//     useEffect(() => {
+//         const key = `${interval}-${formatDate(startDate)}-${formatDate(endDate)}`;
+
+//         const maybeUseCacheAndFetch = async () => {
+//             const cache = getCache();
+
+//             if (cache?.key === key) {
+//                 setStats(cache.stats);
+//                 setRevenue(cache.revenue);
+//                 setCompleted(cache.completed);
+//                 return;
+//             }
+
+//             const token = getToken();
+//             if (!token) {
+//                 toast.error("Not authenticated. Please sign in.");
+//                 logout();
+//                 return;
+//             }
+
+//             setLoading(true);
+//             try {
+//                 const dateParams =
+//                     startDate && endDate
+//                         ? `&start_date=${formatDate(startDate)}&end_date=${formatDate(endDate)}`
+//                         : "";
+
+//                 const [fetchedStats, fetchedRevenue, fetchedCompleted] = await Promise.all([
+//                     fetchDataWithAuth(`${config.apiBaseUrl}/analytics/publisher_stats/?interval=${interval}${dateParams}`),
+//                     fetchDataWithAuth(`${config.apiBaseUrl}/analytics/pub_revenue/?interval=${interval}${dateParams}`),
+//                     fetchDataWithAuth(`${config.apiBaseUrl}/analytics/pub_completed_postbacks/?interval=${interval}${dateParams}`),
+//                 ]);
+
+//                 setStats(fetchedStats);
+//                 setRevenue(fetchedRevenue);
+//                 setCompleted(fetchedCompleted);
+
+//                 setCache(key, fetchedStats, fetchedRevenue, fetchedCompleted);
+//             } catch (err: unknown) {
+//                 if (isErrorWithMessage(err)) {
+//                     toast.error(err.message || "Failed to fetch analytics.");
+//                     if (err.message === "Unauthorized") logout();
+//                 } else {
+//                     toast.error("Unexpected error occurred.");
+//                 }
+//             } finally {
+//                 setLoading(false);
+//             }
+//         };
+
+//         // Run only on client
+//         if (typeof window !== "undefined") {
+//             maybeUseCacheAndFetch();
+//         }
+//     }, [interval, startDate, endDate]);
+
+//     return {
+//         stats,
+//         revenue,
+//         completed,
+//         loading,
+//         interval,
+//         setInterval,
+//     };
+// };
