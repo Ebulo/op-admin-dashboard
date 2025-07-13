@@ -1,3 +1,5 @@
+import { Publisher } from "./publisher";
+
 export interface Billing {
     id: number,
     billing_date: string,
@@ -7,7 +9,8 @@ export interface Billing {
     invoice_file: string | null,
     created_on: string,
     updated_at: string,
-    publisher: number,
+    // publisher: number,
+    publisher: Publisher,
 }
 
 export interface BillingResponse {
