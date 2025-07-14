@@ -7,7 +7,7 @@ export const getPublishers = async (): Promise<Publisher[]> => {
     const token = getToken();
 
     if (!token) {
-        toast.error("Not authenticated. Please sign in.");
+        toast.error("Not authenticated. Please sign in.", { position: "bottom-right" });
         return [];
     }
 
@@ -28,7 +28,7 @@ export const getPublishers = async (): Promise<Publisher[]> => {
         return pubRes.data;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-        toast.error(error.message || "Something went wrong");
+        toast.error(error.message || "Something went wrong", { position: "bottom-right" });
         return [];
     }
 };

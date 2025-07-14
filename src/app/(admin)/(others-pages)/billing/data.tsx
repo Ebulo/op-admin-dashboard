@@ -1,9 +1,14 @@
 import { Billing } from "@/types/billing";
-import { BadgeCheck, CheckCircle2, CircleAlert, Clock } from "lucide-react";
+import { BadgeCheck, CheckCircle2, CircleAlert, Clock, XCircle } from "lucide-react";
 import { updateBillingStatus } from "@/api/billingApi";
 import { JSX } from "react";
 
 export const columns = (setReload: () => void) => [
+    {
+        header: "BID",
+        accessor: "bid",
+        render: (bill: Billing) => bill.bid || "N/A",
+    },
     {
         header: "Publisher",
         accessor: "publisher_name",
@@ -65,17 +70,12 @@ export const columns = (setReload: () => void) => [
             );
         },
     },
+
     {
         header: "Actions",
         accessor: "id",
         render: (bill: Billing) => {
-            const handleAction = async () => {
-                const nextStatus =
-                    bill.status === "SUBMITTED" ? "APPROVED" :
-                        bill.status === "APPROVED" ? "PAID" : null;
-
-                if (!nextStatus) return;
-
+            const handleStatusChange = async (nextStatus: "APPROVED" | "PAID" | "PENDING") => {
                 const confirmed = confirm(`Are you sure you want to mark this as ${nextStatus}?`);
                 if (!confirmed) return;
 
@@ -87,15 +87,37 @@ export const columns = (setReload: () => void) => [
                 return <span className="text-gray-400 italic">No actions</span>;
             }
 
-            return (
-                <button
-                    onClick={handleAction}
-                    className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
-                >
-                    {bill.status === "SUBMITTED" && "Approve"}
-                    {bill.status === "APPROVED" && "Mark Paid"}
-                </button>
-            );
-        },
-    },
+            if (bill.status === "SUBMITTED") {
+                return (
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => handleStatusChange("APPROVED")}
+                            className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
+                        >
+                            Approve
+                        </button>
+                        <button
+                            onClick={() => handleStatusChange("PENDING")}
+                            className="text-sm bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded flex items-center"
+                        >
+                            <XCircle size={18} />
+                        </button>
+                    </div>
+                );
+            }
+
+            if (bill.status === "APPROVED") {
+                return (
+                    <button
+                        onClick={() => handleStatusChange("PAID")}
+                        className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
+                    >
+                        Mark Paid
+                    </button>
+                );
+            }
+
+            return <span className="text-gray-400 italic">No actions</span>;
+        }
+    }
 ];

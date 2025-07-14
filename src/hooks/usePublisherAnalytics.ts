@@ -50,7 +50,7 @@ export const usePublisherAnalytics = () => {
 
         const token = getToken();
         if (!token) {
-            toast.error("Not authenticated. Please sign in.");
+            toast.error("Not authenticated. Please sign in.", { position: "bottom-right" });
             logout();
             return;
         }
@@ -85,10 +85,10 @@ export const usePublisherAnalytics = () => {
                     if (err.message === "Unauthorized") {
                         logout();
                     } else {
-                        toast.error(err.message || "Failed to fetch analytics.");
+                        toast.error(err.message || "Failed to fetch analytics.", { position: "bottom-right" });
                     }
                 } else {
-                    toast.error("An unexpected error occurred.");
+                    toast.error("An unexpected error occurred.", { position: "bottom-right" });
                 }
             } finally {
                 setLoading(false);

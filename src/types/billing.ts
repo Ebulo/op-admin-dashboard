@@ -2,6 +2,7 @@ import { Publisher } from "./publisher";
 
 export interface Billing {
     id: number,
+    bid: string,
     billing_date: string,
     billing_period: string,
     amount_usd: string,

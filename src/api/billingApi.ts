@@ -6,7 +6,7 @@ import { Billing, BillingResponse } from '@/types/billing';
 export const getAdminBillings = async (search = "", filters = {}): Promise<Billing[]> => {
     const token = getToken();
     if (!token) {
-        toast.error("Not authenticated. Please sign in.");
+        toast.error("Not authenticated. Please sign in.", { position: "bottom-right" });
         return [];
     }
 
@@ -35,15 +35,15 @@ export const getAdminBillings = async (search = "", filters = {}): Promise<Billi
         return data.results;
     } catch (error: unknown) {
         if (error instanceof Error) {
-            toast.error(error.message || "Something went wrong");
+            toast.error(error.message || "Something went wrong", { position: "bottom-right" });
         } else {
-            toast.error("Something went wrong");
+            toast.error("Something went wrong", { position: "bottom-right" });
         }
         return [];
     }
 };
 
-export const updateBillingStatus = async (id: number, status: "APPROVED" | "PAID"): Promise<boolean> => {
+export const updateBillingStatus = async (id: number, status: "APPROVED" | "PAID" | "PENDING"): Promise<boolean> => {
     const token = getToken();
     if (!token) {
         toast.error("Not authenticated. Please sign in.");
@@ -65,13 +65,13 @@ export const updateBillingStatus = async (id: number, status: "APPROVED" | "PAID
             throw new Error(err?.detail || "Failed to update billing");
         }
 
-        toast.success("Billing updated successfully.");
+        toast.success("Billing updated successfully.", { position: "bottom-right" });
         return true;
     } catch (error: unknown) {
         if (error instanceof Error) {
-            toast.error(error.message || "Something went wrong");
+            toast.error(error.message || "Something went wrong", { position: "bottom-right" });
         } else {
-            toast.error("Something went wrong");
+            toast.error("Something went wrong", { position: "bottom-right" });
         }
         return false;
     }
