@@ -14,7 +14,7 @@ const STATUS_OPTIONS = ["ALL", "PENDING", "SUBMITTED", "APPROVED", "PAID"];
 export default function BillingTables() {
   const [billings, setBillings] = useState<Billing[]>([]);
   const [filtered, setFiltered] = useState<Billing[]>([]);
-  const [search, setSearch] = useState("");
+  // const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("SUBMITTED");
   const [loading, setLoading] = useState(false);
   const hasFetched = useRef(false);
@@ -40,7 +40,7 @@ export default function BillingTables() {
   }, [fetchBillings]);
 
   useEffect(() => {
-    const lower = search.toLowerCase();
+    // const lower = search.toLowerCase();
 
     const timeout = setTimeout(() => {
       let filteredData = [...billings];
@@ -51,23 +51,23 @@ export default function BillingTables() {
         );
       }
 
-      if (lower.trim()) {
-        filteredData = filteredData.filter(
-          (b) =>
-            b.publisher?.publisher_name?.toLowerCase().includes(lower) ||
-            b.publisher?.email?.toLowerCase().includes(lower) ||
-            b.billing_period?.toLowerCase().includes(lower) ||
-            b.status?.toLowerCase().includes(lower)
-        );
-      }
+      // if (lower.trim()) {
+      //   filteredData = filteredData.filter(
+      //     (b) =>
+      //       b.publisher?.publisher_name?.toLowerCase().includes(lower) ||
+      //       b.publisher?.email?.toLowerCase().includes(lower) ||
+      //       b.billing_period?.toLowerCase().includes(lower) ||
+      //       b.status?.toLowerCase().includes(lower)
+      //   );
+      // }
 
       setFiltered(filteredData);
     }, 300);
 
     return () => clearTimeout(timeout);
-  }, [search, statusFilter, billings]);
+  }, [statusFilter, billings]);
 
-  const handleSearch = (query: string) => setSearch(query);
+  // const handleSearch = (query: string) => setSearch(query);
 
   return (
     <div>
@@ -75,7 +75,7 @@ export default function BillingTables() {
         pageTitle="All Billings"
         pageActions={
           <div className="flex items-center gap-2">
-            <form>
+            {/* <form>
               <div className="relative">
                 <span className="absolute -translate-y-1/2 left-4 top-1/2 pointer-events-none">
                   <svg
@@ -107,11 +107,8 @@ export default function BillingTables() {
                   <span> K </span>
                 </button>
               </div>
-            </form>
-            <Button onClick={fetchBillings} size="sm">
-              <RotateCw size={16} className={loading ? "animate-spin" : ""} />
-              Refresh
-            </Button>
+            </form> */}
+
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -123,6 +120,10 @@ export default function BillingTables() {
                 </option>
               ))}
             </select>
+            <Button onClick={fetchBillings} size="sm">
+              <RotateCw size={16} className={loading ? "animate-spin" : ""} />
+              Refresh
+            </Button>
           </div>
         }
       />

@@ -11,22 +11,22 @@ import Button from "@/components/ui/button/Button";
 
 export default function BasicTables() {
   const [apps, setApps] = useState<App[]>([]);
-  const [search, setSearch] = useState("");
+  // const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   // const hasFetched = useRef(false);
 
   const fetchApps = useCallback(async () => {
     setLoading(true);
-    const data = await getApps(search);
+    const data = await getApps();
     setApps(data);
     setLoading(false);
-  }, [search]);
+  }, []);
 
   useEffect(() => {
     fetchApps();
   }, []);
 
-  const handleSearch = (query: string) => setSearch(query);
+  // const handleSearch = (query: string) => setSearch(query);
 
   return (
     <div>
@@ -34,7 +34,7 @@ export default function BasicTables() {
         pageTitle="Apps"
         pageActions={
           <div className="flex items-center gap-2">
-            <form>
+            {/* <form>
               <div className="relative">
                 <span className="absolute -translate-y-1/2 left-4 top-1/2 pointer-events-none">
                   <svg
@@ -66,7 +66,7 @@ export default function BasicTables() {
                   <span> K </span>
                 </button>
               </div>
-            </form>
+            </form> */}
             <Button onClick={fetchApps} size="sm">
               <RotateCw size={16} className={loading ? "animate-spin" : ""} />
               Refresh
