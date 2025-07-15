@@ -49,11 +49,11 @@ const navItems: NavItem[] = [
 
 const othersItems: NavItem[] = [
   // {
-  //   icon: <PieChartIcon />,
-  //   name: "More Statistics",
+  //   icon: <Workflow />,
+  //   name: "Integrations",
   //   subItems: [
-  //     // { name: "Line Chart", path: "/line-chart", pro: false },
-  //     // { name: "Bar Chart", path: "/bar-chart", pro: false },
+  //     { name: "Android", path: "/integrations/android/" },
+  //     { name: "Flutter", path: "/integrations/android/" },
   //   ],
   // },
 ];
