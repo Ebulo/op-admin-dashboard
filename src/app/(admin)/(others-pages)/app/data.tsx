@@ -1,5 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
+import { requestAppKeys } from "@/api/appsApi";
 import { OpenLink } from "@/icons";
+import { Send } from "lucide-react";
 
 interface App {
     id: number,
@@ -50,8 +52,49 @@ export const columns = [
     },
     { header: "Base Postback URL", accessor: "postback_url" },
     { header: "Dollar Equivalent", accessor: "dollar_equivalent" },
-    // { header: "Publisher", accessor: "publisher" },
-    // { header: "Created Date", accessor: "created_on" },
-    // { header: "Updated Date", accessor: "updated_at" },
+    {
+        header: "Request Keys",
+        accessor: "app_link",
+        render: (app: App) => (
+            <div className="flex justify-end">
+                <button
+                    onClick={() => requestAppKeys(app.id)}
+                    className="min-w-[140px] flex items-center justify-center gap-2 text-sm bg-blue-600 hover:bg-blue-700 text-white px-1 py-2 rounded"
+                >
+                    <Send size={16} />
+                    Request Keys
+                </button>
+            </div>
+        ),
+    }
+    // {
+    //     header: "Request Keys",
+    //     accessor: "app_link",
+    //     render: (app: App) => {
+    //         const now = Date.now();
+    //         const lastRequest = requestCooldowns.get(app.id);
+    //         const isCoolingDown = lastRequest && now - lastRequest < 10 * 60 * 1000;
+
+    //         return (
+    //             <div className="flex justify-end">
+    //                 <button
+    //                     onClick={async () => {
+    //                         const ok = await requestAppKeys(app.id);
+    //                         // Optionally force refresh UI
+    //                     }}
+    //                     className={`min-w-[140px] flex items-center justify-center gap-2 text-sm px-1 py-2 rounded 
+    //                     ${isCoolingDown
+    //                             ? "bg-gray-400 cursor-not-allowed"
+    //                             : "bg-blue-600 hover:bg-blue-700 text-white"
+    //                         }`}
+    //                     disabled={!!isCoolingDown}
+    //                 >
+    //                     <Send size={16} />
+    //                     Request Keys
+    //                 </button>
+    //             </div>
+    //         );
+    //     },
+    // }
 
 ];
