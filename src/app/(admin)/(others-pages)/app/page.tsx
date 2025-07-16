@@ -20,11 +20,13 @@ export default function BasicTables() {
     const data = await getApps(search);
     setApps(data);
     setLoading(false);
-  }, []);
+  }, [search]);
 
   useEffect(() => {
-    fetchApps();
-  }, [search]);
+    if (apps.length == 0) {
+      fetchApps();
+    }
+  }, []);
 
   const handleSearch = (query: string) => setSearch(query);
 
