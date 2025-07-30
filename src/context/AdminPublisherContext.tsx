@@ -6,12 +6,15 @@ import { Publisher } from "@/types/publisher";
 interface AdminPublisherContextType {
     selectedPublisher: Publisher | null;
     setSelectedPublisher: (publisher: Publisher | null) => void;
+    // allPublisher: string;
+    // setAllPublisher: (publisher: string) => void;
 }
 
 const AdminPublisherContext = createContext<AdminPublisherContextType | undefined>(undefined);
 
 export const AdminPublisherProvider = ({ children }: { children: React.ReactNode }) => {
     const [selectedPublisher, setSelectedPublisher] = useState<Publisher | null>(null);
+    // const [allPublisher, setAllPublisher] = useState<string>("true");
     return (
         <AdminPublisherContext.Provider value={{ selectedPublisher, setSelectedPublisher }}>
             {children}

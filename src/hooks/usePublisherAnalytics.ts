@@ -8,6 +8,7 @@ import { useDateRange } from "@/context/DateRangeContext";
 import { fetchDataWithAuth } from "@/api/statsAPI";
 import { CompletedStats, MonthlyRevenue, PublisherStats } from "@/types/stats";
 import { useAdminPublisher } from "@/context/AdminPublisherContext";
+import { useAllContext } from "@/context/AllOtherContext";
 
 
 // GLOBAL CACHE
@@ -32,6 +33,7 @@ function isErrorWithMessage(error: unknown): error is { message: string } {
 export const usePublisherAnalytics = () => {
     const { startDate, endDate } = useDateRange();
     const { selectedPublisher } = useAdminPublisher();
+    const { selectedGroupBy } = useAllContext();
     const [interval, setInterval] = useState<IntervalType>("daily");
     const [loading, setLoading] = useState(false);
 
@@ -42,7 +44,7 @@ export const usePublisherAnalytics = () => {
     const formatDate = (d: Date | null) => d?.toISOString().split("T")[0] ?? "";
     // const key = `${interval}-${formatDate(startDate)}-${formatDate(endDate)}`;
     // const shouldFetch = key !== cachedKey;
-    const key = `${interval}-${formatDate(startDate)}-${formatDate(endDate)}-${selectedPublisher?.id || "self"}`;
+    const key = `${interval}-${formatDate(startDate)}-${formatDate(endDate)}-${selectedPublisher?.id || "self"}-${selectedGroupBy || "source"}`;
     const shouldFetch = key !== cachedKey;
 
     useEffect(() => {
@@ -59,15 +61,17 @@ export const usePublisherAnalytics = () => {
             setLoading(true);
             try {
                 const publisherParam = selectedPublisher?.id ? `&publisher_id=${selectedPublisher.id}` : "";
+                const allPublisherParam = selectedPublisher?.id == null ? `&all_publishers=${true}` : "&all_publishers=false";
+                const groupByParam = `&group_by=${selectedGroupBy || "source"}`;
                 const dateParams =
                     startDate && endDate
                         ? `&start_date=${formatDate(startDate)}&end_date=${formatDate(endDate)}`
                         : "";
 
                 const [fetchedStats, fetchedRevenue, fetchedCompleted] = await Promise.all([
-                    fetchDataWithAuth(`${config.apiBaseUrl}/admin/stats/?interval=${interval}${dateParams}${publisherParam}`),
-                    fetchDataWithAuth(`${config.apiBaseUrl}/admin/revenue/?interval=${interval}${dateParams}${publisherParam}`),
-                    fetchDataWithAuth(`${config.apiBaseUrl}/admin/completed_postbacks/?interval=${interval}${dateParams}${publisherParam}`),
+                    fetchDataWithAuth(`${config.apiBaseUrl}/admin/stats/?interval=${interval}${dateParams}${publisherParam}${allPublisherParam}`),
+                    fetchDataWithAuth(`${config.apiBaseUrl}/admin/revenue/?interval=${interval}${dateParams}${publisherParam}${allPublisherParam}${groupByParam}`),
+                    fetchDataWithAuth(`${config.apiBaseUrl}/admin/completed_postbacks/?interval=${interval}${dateParams}${publisherParam}${allPublisherParam}${groupByParam}`),
                 ]);
 
                 // Cache globally
@@ -96,7 +100,7 @@ export const usePublisherAnalytics = () => {
         };
 
         fetchAnalytics();
-    }, [interval, startDate, endDate, selectedPublisher]);
+    }, [interval, startDate, endDate, selectedPublisher, selectedGroupBy]);
 
     return {
         stats,

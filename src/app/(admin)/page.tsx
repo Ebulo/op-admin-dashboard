@@ -5,7 +5,7 @@ import FilterSortBar from "@/components/ecommerce/FilterBar";
 import { NumberMetrics } from "@/components/ecommerce/NumberMetrics";
 import MonthlySalesChart from "@/components/ecommerce/MonthlySalesChart";
 import DynamicLineChart from "@/components/ecommerce/DynamicLineChart";
-import { IntervalType } from "@/types/other";
+// import { IntervalType } from "@/types/other";
 // import { DateRangeProvider } from "@/context/DateRangeContext";
 
 const filters = [
@@ -48,7 +48,7 @@ export default function Ecommerce() {
             title="Completed Tasks"
             data={completed}
             interval={interval}
-            onIntervalChange={(intv) => setInterval(intv as IntervalType)}
+          // onIntervalChange={(intv) => setInterval(intv as IntervalType)}
           />
         </>
       )}

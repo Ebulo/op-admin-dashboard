@@ -1,6 +1,7 @@
 "use client";
 
 import { AdminPublisherProvider } from "@/context/AdminPublisherContext";
+import { AllOtherDetailProvider } from "@/context/AllOtherContext";
 import { DateRangeProvider } from "@/context/DateRangeContext";
 import { useSidebar } from "@/context/SidebarContext";
 import AppHeader from "@/layout/AppHeader";
@@ -40,11 +41,13 @@ export default function AdminLayout({
         {/* Header */}
         <AppHeader />
         {/* Page Content */}
-        <AdminPublisherProvider>
-          <DateRangeProvider>
-            <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
-          </DateRangeProvider>
-        </AdminPublisherProvider>
+        <AllOtherDetailProvider>
+          <AdminPublisherProvider>
+            <DateRangeProvider>
+              <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
+            </DateRangeProvider>
+          </AdminPublisherProvider>
+        </AllOtherDetailProvider>
       </div>
     </div>
   );
