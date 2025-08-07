@@ -5,8 +5,6 @@ import FilterSortBar from "@/components/ecommerce/FilterBar";
 import { NumberMetrics } from "@/components/ecommerce/NumberMetrics";
 import MonthlySalesChart from "@/components/ecommerce/MonthlySalesChart";
 import DynamicLineChart from "@/components/ecommerce/DynamicLineChart";
-// import { IntervalType } from "@/types/other";
-// import { DateRangeProvider } from "@/context/DateRangeContext";
 
 const filters = [
   { label: "All", value: "all" },
@@ -22,8 +20,6 @@ const sorts = [
 
 export default function Ecommerce() {
   const { stats, revenue, loading, completed, callAllApi } = usePublisherAnalytics();
-  // const { stats, revenue, loading, interval, setInterval } = usePublisherAnalytics();
-  // alert(`Here is the updates --> ${stats} ${revenue}`)
 
   useEffect(() => {
     if (typeof window !== "undefined") {

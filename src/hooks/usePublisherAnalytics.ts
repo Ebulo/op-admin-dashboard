@@ -26,6 +26,7 @@ function isErrorWithMessage(error: unknown): error is { message: string } {
 // MAIN HOOK
 export const usePublisherAnalytics = () => {
     const getLocalArray = (key: string): string[] => {
+        if (typeof window === "undefined") return [];
         try {
             const data = localStorage.getItem(key);
             return data ? JSON.parse(data) : [];
@@ -35,7 +36,9 @@ export const usePublisherAnalytics = () => {
     };
 
     // const [interval, setInterval] = useState<IntervalType>("daily");
-    const interval = localStorage.getItem("interval")?.toString();
+    const interval = typeof window !== "undefined"
+        ? localStorage.getItem("interval")?.toString()
+        : undefined;
     const [loading, setLoading] = useState(false);
 
     const [stats, setStats] = useState<PublisherStats | null>(null);
@@ -49,8 +52,12 @@ export const usePublisherAnalytics = () => {
         const selectedAppIds = getLocalArray("appIds");
         const selectedCountryCodes = getLocalArray("countryCodes");
         const selectedPublisherIds = getLocalArray("publisherIds");
-        const interval = localStorage.getItem("interval")?.toString();
-        const dateRangeRaw = localStorage.getItem("dateRange") ?? "";
+        const interval = typeof window !== "undefined"
+            ? localStorage.getItem("interval")?.toString()
+            : undefined;
+        const dateRangeRaw = typeof window !== "undefined"
+            ? localStorage.getItem("dateRange")?.toString()
+            : undefined;
 
         let startDate = null;
         let endDate = null;
