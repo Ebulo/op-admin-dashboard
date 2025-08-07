@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { usePublisherAnalytics } from "@/hooks/usePublisherAnalytics";
 import FilterSortBar from "@/components/ecommerce/FilterBar";
 import { NumberMetrics } from "@/components/ecommerce/NumberMetrics";
@@ -21,16 +21,16 @@ const sorts = [
 export default function Ecommerce() {
   const { stats, revenue, loading, completed, callAllApi } = usePublisherAnalytics();
 
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     localStorage.removeItem("publisherIds");
-  //     localStorage.removeItem("appIds");
-  //     localStorage.removeItem("countryCodes");
-  //     localStorage.removeItem("groupByFields");
-  //     localStorage.removeItem("dateRange");
-  //     localStorage.removeItem("interval");
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("publisherIds");
+      localStorage.removeItem("appIds");
+      localStorage.removeItem("countryCodes");
+      localStorage.removeItem("groupByFields");
+      localStorage.removeItem("dateRange");
+      localStorage.removeItem("interval");
+    }
+  }, []);
 
   return (
     <div className="col-span-12 space-y-6 xl:col-span-7">

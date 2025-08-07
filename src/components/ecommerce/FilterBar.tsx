@@ -5,7 +5,6 @@ import { DateRange, RangeKeyDict } from "react-date-range";
 import { useDateRange } from "@/context/DateRangeContext";
 import {
     format,
-    // startOfDay
 } from "date-fns";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
@@ -13,7 +12,6 @@ import { IntervalType } from "@/types/other";
 import { useAllContext } from "@/context/AllOtherContext";
 import FilterPanel from "./FilterOptions";
 import Button from "../ui/button/Button";
-// import { usePublisherAnalytics } from "@/hooks/usePublisherAnalytics";
 
 interface FilterOption {
     label: string;
@@ -30,11 +28,9 @@ const intervals: IntervalType[] = [null, "daily", "monthly", "quarterly", "yearl
 interface FilterSortBarProps {
     filters?: FilterOption[];
     sorts?: SortOption[];
-    // interval: IntervalType;
     onFilterChange?: (filter: string) => void;
     onSortChange?: (sort: string) => void;
     onDateChange?: (date: Date) => void;
-    // onIntervalChange: (interval: IntervalType) => void;
     callAllApi: () => void;
 }
 
@@ -47,23 +43,14 @@ const groupByOptions = [
 
 
 export default function FilterSortBar({
-    // onDateChange,
-    // interval,
-    // onIntervalChange,
     callAllApi,
 }: FilterSortBarProps) {
-    // const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
     const { startDate, endDate, setStartDate, setEndDate } = useDateRange();
-    // const { selectedPublisher, setSelectedPublisher } = useAdminPublisher();
     const { selectedGroupBy, setSelectedGroupBy } = useAllContext();
-    // selectedGroupBy = JSON.parse(localStorage.getItem("groupByFields") || '["source"]')[0];
 
-    const [interval, setInterval] = useState<IntervalType>(localStorage.getItem("interval")?.toString() as IntervalType);
-
-    // const { callAllApi } = usePublisherAnalytics();
+    const [interval, setInterval] = useState<IntervalType>("daily");
 
     const [showPicker, setShowPicker] = useState(false);
-    // const pickerRef = useRef<HTMLDivElement>(null);
 
     const handleRangeChange = (ranges: RangeKeyDict) => {
         const { startDate, endDate } = ranges.selection;
@@ -85,14 +72,10 @@ export default function FilterSortBar({
     };
 
     // const [publishers, setPublishers] = useState<Publisher[]>([]);
-
-    useEffect(() => {
-        const fetch = async () => {
-            // const result = await getPublishers();
-            // setPublishers(result);
-        };
-        fetch();
-    }, []);
+    // useEffect(() => {
+    //     const fetch = async () => {};
+    //     fetch();
+    // }, []);
 
     const refreshContent = useCallback(async () => {
         callAllApi();
@@ -130,7 +113,8 @@ export default function FilterSortBar({
                         value={selectedGroupBy || "source"}
                         onChange={(e) => {
                             const val = e.target.value;
-                            localStorage.setItem("groupByFields", JSON.stringify([val]));
+                            if (typeof window !== "undefined")
+                                localStorage.setItem("groupByFields", JSON.stringify([val]));
                             setSelectedGroupBy(e.target.value)
                         }}
                         className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
@@ -182,7 +166,7 @@ export default function FilterSortBar({
                     <select
                         value={interval ?? "None"}
                         // onChange={(e) => onIntervalChange(e.target.value as IntervalType)}
-                        onChange={(e) => { localStorage.setItem("interval", e.target.value); setInterval(e.target.value as IntervalType) }}
+                        onChange={(e) => { if (typeof window !== "undefined") localStorage.setItem("interval", e.target.value); setInterval(e.target.value as IntervalType) }}
                         className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                     >
                         {intervals.map((intv) => (

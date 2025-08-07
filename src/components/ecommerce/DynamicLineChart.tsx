@@ -210,7 +210,7 @@ export default function DynamicLineChart({ title, data }: Props) {
                         {title}
                     </h3>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Completed postbacks per {localStorage.getItem("interval")}
+                        Completed postbacks per {typeof window !== "undefined" ? localStorage.getItem("interval") : "Not Found"}
                     </p>
                 </div>
             </div>
