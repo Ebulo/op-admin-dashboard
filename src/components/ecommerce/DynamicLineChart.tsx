@@ -104,7 +104,7 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
-import { IntervalType } from "@/types/other";
+// import { IntervalType } from "@/types/other";
 import { CompletedStats } from "@/types/stats";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
@@ -112,10 +112,10 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false })
 interface Props {
     title: string;
     data: CompletedStats;
-    interval: IntervalType;
+    // interval: IntervalType;
 }
 
-export default function DynamicLineChart({ title, data, interval }: Props) {
+export default function DynamicLineChart({ title, data }: Props) {
     // ✅ Step 1: Get all unique periods across all series
     const allPeriods = new Set<string>();
     Object.values(data).forEach((entries) => {
@@ -210,7 +210,7 @@ export default function DynamicLineChart({ title, data, interval }: Props) {
                         {title}
                     </h3>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Completed postbacks per {interval}
+                        Completed postbacks per {localStorage.getItem("interval")}
                     </p>
                 </div>
             </div>

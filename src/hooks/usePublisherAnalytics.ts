@@ -8,9 +8,9 @@ import { CompletedStats, MonthlyRevenue, PublisherStats } from "@/types/stats";
 
 
 // GLOBAL CACHE
-let cachedStats: PublisherStats | null = null;
-let cachedRevenue: MonthlyRevenue = {};
-let cachedCompleted: CompletedStats = {};
+// let cachedStats: PublisherStats | null = null;
+// let cachedRevenue: MonthlyRevenue = {};
+// let cachedCompleted: CompletedStats = {};
 let cachedKey: string | null = null;
 
 // HELPER
@@ -111,23 +111,23 @@ export const usePublisherAnalytics = () => {
                 ]);
 
                 // Cache globally
-                cachedStats = fetchedStats;
-                cachedRevenue = fetchedRevenue;
-                cachedCompleted = fetchedCompleted;
+                // cachedStats = fetchedStats;
+                // cachedRevenue = fetchedRevenue;
+                // cachedCompleted = fetchedCompleted;
                 cachedKey = key;
 
                 // Set locally
-                // setStats(fetchedStats);
-                // setRevenue(fetchedRevenue);
-                // setCompleted(fetchedCompleted);
-                if (!shouldFetch) {
-                    if (cachedStats && cachedRevenue && cachedCompleted) {
-                        setStats(cachedStats);
-                        setRevenue(cachedRevenue);
-                        setCompleted(cachedCompleted);
-                    }
-                    return;
-                }
+                setStats(fetchedStats);
+                setRevenue(fetchedRevenue);
+                setCompleted(fetchedCompleted);
+                // if (!shouldFetch) {
+                //     if (cachedStats && cachedRevenue && cachedCompleted) {
+                //         setStats(cachedStats);
+                //         setRevenue(cachedRevenue);
+                //         setCompleted(cachedCompleted);
+                //     }
+                //     return;
+                // }
             } catch (err: unknown) {
                 if (isErrorWithMessage(err)) {
                     if (err.message === "Unauthorized") {

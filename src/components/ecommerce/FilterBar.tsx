@@ -30,7 +30,7 @@ const intervals: IntervalType[] = [null, "daily", "monthly", "quarterly", "yearl
 interface FilterSortBarProps {
     filters?: FilterOption[];
     sorts?: SortOption[];
-    interval: IntervalType;
+    // interval: IntervalType;
     onFilterChange?: (filter: string) => void;
     onSortChange?: (sort: string) => void;
     onDateChange?: (date: Date) => void;

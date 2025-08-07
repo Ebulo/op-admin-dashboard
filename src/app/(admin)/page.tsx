@@ -21,7 +21,7 @@ const sorts = [
 ];
 
 export default function Ecommerce() {
-  const { stats, revenue, loading, completed, interval, callAllApi } = usePublisherAnalytics();
+  const { stats, revenue, loading, completed, callAllApi } = usePublisherAnalytics();
   // const { stats, revenue, loading, interval, setInterval } = usePublisherAnalytics();
   // alert(`Here is the updates --> ${stats} ${revenue}`)
 
@@ -41,7 +41,7 @@ export default function Ecommerce() {
       <FilterSortBar
         filters={filters}
         sorts={sorts}
-        interval={interval}
+        // interval={interval}
         onFilterChange={(f) => console.log("Filter changed:", f)}
         onSortChange={(s) => console.log("Sort changed:", s)}
         // onIntervalChange={(intv) => setInterval(intv)}
@@ -60,7 +60,7 @@ export default function Ecommerce() {
           <DynamicLineChart
             title="Completed Tasks"
             data={completed}
-            interval={interval}
+          // interval={interval}
           // onIntervalChange={(intv) => setInterval(intv as IntervalType)}
           />
         </>
