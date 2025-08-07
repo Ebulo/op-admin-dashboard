@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { usePublisherAnalytics } from "@/hooks/usePublisherAnalytics";
 import FilterSortBar from "@/components/ecommerce/FilterBar";
 import { NumberMetrics } from "@/components/ecommerce/NumberMetrics";
@@ -21,8 +21,20 @@ const sorts = [
 ];
 
 export default function Ecommerce() {
-  const { stats, revenue, loading, completed, interval, setInterval } = usePublisherAnalytics();
+  const { stats, revenue, loading, completed, interval, callAllApi } = usePublisherAnalytics();
   // const { stats, revenue, loading, interval, setInterval } = usePublisherAnalytics();
+  // alert(`Here is the updates --> ${stats} ${revenue}`)
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("publisherIds");
+      localStorage.removeItem("appIds");
+      localStorage.removeItem("countryCodes");
+      localStorage.removeItem("groupByFields");
+      localStorage.removeItem("dateRange");
+      localStorage.removeItem("interval");
+    }
+  }, []);
 
   return (
     <div className="col-span-12 space-y-6 xl:col-span-7">
@@ -32,7 +44,8 @@ export default function Ecommerce() {
         interval={interval}
         onFilterChange={(f) => console.log("Filter changed:", f)}
         onSortChange={(s) => console.log("Sort changed:", s)}
-        onIntervalChange={(intv) => setInterval(intv)}
+        // onIntervalChange={(intv) => setInterval(intv)}
+        callAllApi={callAllApi}
       />
 
       {!loading && stats && (

@@ -1,14 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { getToken, logout } from "@/api/authApi";
 import { config } from "@/config/config";
-import { IntervalType } from "@/types/other";
-import { useDateRange } from "@/context/DateRangeContext";
 import { fetchDataWithAuth } from "@/api/statsAPI";
 import { CompletedStats, MonthlyRevenue, PublisherStats } from "@/types/stats";
-import { useAdminPublisher } from "@/context/AdminPublisherContext";
-import { useAllContext } from "@/context/AllOtherContext";
 
 
 // GLOBAL CACHE
@@ -18,8 +14,6 @@ let cachedCompleted: CompletedStats = {};
 let cachedKey: string | null = null;
 
 // HELPER
-
-
 function isErrorWithMessage(error: unknown): error is { message: string } {
     return (
         typeof error === "object" &&
@@ -31,23 +25,50 @@ function isErrorWithMessage(error: unknown): error is { message: string } {
 
 // MAIN HOOK
 export const usePublisherAnalytics = () => {
-    const { startDate, endDate } = useDateRange();
-    const { selectedPublisher } = useAdminPublisher();
-    const { selectedGroupBy } = useAllContext();
-    const [interval, setInterval] = useState<IntervalType>("daily");
+    const getLocalArray = (key: string): string[] => {
+        try {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : [];
+        } catch {
+            return [];
+        }
+    };
+
+    // const [interval, setInterval] = useState<IntervalType>("daily");
+    const interval = localStorage.getItem("interval")?.toString();
     const [loading, setLoading] = useState(false);
 
-    const [stats, setStats] = useState<PublisherStats | null>(cachedStats);
-    const [revenue, setRevenue] = useState<MonthlyRevenue>(cachedRevenue);
-    const [completed, setCompleted] = useState<CompletedStats>(cachedCompleted);
+    const [stats, setStats] = useState<PublisherStats | null>(null);
+    const [revenue, setRevenue] = useState<MonthlyRevenue>({});
+    const [completed, setCompleted] = useState<CompletedStats>({});
 
     const formatDate = (d: Date | null) => d?.toISOString().split("T")[0] ?? "";
-    // const key = `${interval}-${formatDate(startDate)}-${formatDate(endDate)}`;
-    // const shouldFetch = key !== cachedKey;
-    const key = `${interval}-${formatDate(startDate)}-${formatDate(endDate)}-${selectedPublisher?.id || "self"}-${selectedGroupBy || "source"}`;
-    const shouldFetch = key !== cachedKey;
 
-    useEffect(() => {
+    const callAllApi = async () => {
+        const selectedGroupByFields = getLocalArray("groupByFields");
+        const selectedAppIds = getLocalArray("appIds");
+        const selectedCountryCodes = getLocalArray("countryCodes");
+        const selectedPublisherIds = getLocalArray("publisherIds");
+        const interval = localStorage.getItem("interval")?.toString();
+        const dateRangeRaw = localStorage.getItem("dateRange") ?? "";
+
+        let startDate = null;
+        let endDate = null;
+
+        if (dateRangeRaw) {
+            const dateRange = JSON.parse(dateRangeRaw);
+
+            startDate = new Date(dateRange.startDate);
+            endDate = new Date(dateRange.endDate);
+
+            console.log("Parsed Dates:", startDate, endDate);
+        }
+
+        const key = `${interval}-${formatDate(startDate)}-${formatDate(endDate)}-${selectedPublisherIds.join(",")}-${selectedAppIds.join(",")}-${selectedCountryCodes.join(",")}-${selectedGroupByFields.join(",")}`;
+
+        const shouldFetch = key !== cachedKey;
+        console.log("Hey here is the logs of everything!");
+
         if (!shouldFetch) return;
 
         const token = getToken();
@@ -60,18 +81,33 @@ export const usePublisherAnalytics = () => {
         const fetchAnalytics = async () => {
             setLoading(true);
             try {
-                const publisherParam = selectedPublisher?.id ? `&publisher_id=${selectedPublisher.id}` : "";
-                const allPublisherParam = selectedPublisher?.id == null ? `&all_publishers=${true}` : "&all_publishers=false";
-                const groupByParam = `&group_by=${selectedGroupBy || "source"}`;
+                const publishersParam = selectedPublisherIds.length > 0
+                    ? `&publishers=${selectedPublisherIds.join(",")}`
+                    : "&all_publishers=true";
+
+                const appsParam = selectedAppIds.length > 0
+                    ? `&apps=${selectedAppIds.join(",")}`
+                    : "";
+
+                const countriesParam = selectedCountryCodes.length > 0
+                    ? `&countries=${selectedCountryCodes.join(",")}`
+                    : "";
+
+                const groupByParam = selectedGroupByFields.length > 0
+                    ? `&group_by=${selectedGroupByFields.join(",")}`
+                    : "&group_by=source";
+
                 const dateParams =
                     startDate && endDate
                         ? `&start_date=${formatDate(startDate)}&end_date=${formatDate(endDate)}`
                         : "";
 
+                const queryParams = `?interval=${interval}${dateParams}${publishersParam}${appsParam}${countriesParam}${groupByParam}`;
+
                 const [fetchedStats, fetchedRevenue, fetchedCompleted] = await Promise.all([
-                    fetchDataWithAuth(`${config.apiBaseUrl}/admin/stats/?interval=${interval}${dateParams}${publisherParam}${allPublisherParam}`),
-                    fetchDataWithAuth(`${config.apiBaseUrl}/admin/revenue/?interval=${interval}${dateParams}${publisherParam}${allPublisherParam}${groupByParam}`),
-                    fetchDataWithAuth(`${config.apiBaseUrl}/admin/completed_postbacks/?interval=${interval}${dateParams}${publisherParam}${allPublisherParam}${groupByParam}`),
+                    fetchDataWithAuth(`${config.apiBaseUrl}/admin/stats/${queryParams}`),
+                    fetchDataWithAuth(`${config.apiBaseUrl}/admin/revenue/${queryParams}`),
+                    fetchDataWithAuth(`${config.apiBaseUrl}/admin/completed_postbacks/${queryParams}`),
                 ]);
 
                 // Cache globally
@@ -81,9 +117,17 @@ export const usePublisherAnalytics = () => {
                 cachedKey = key;
 
                 // Set locally
-                setStats(fetchedStats);
-                setRevenue(fetchedRevenue);
-                setCompleted(fetchedCompleted);
+                // setStats(fetchedStats);
+                // setRevenue(fetchedRevenue);
+                // setCompleted(fetchedCompleted);
+                if (!shouldFetch) {
+                    if (cachedStats && cachedRevenue && cachedCompleted) {
+                        setStats(cachedStats);
+                        setRevenue(cachedRevenue);
+                        setCompleted(cachedCompleted);
+                    }
+                    return;
+                }
             } catch (err: unknown) {
                 if (isErrorWithMessage(err)) {
                     if (err.message === "Unauthorized") {
@@ -100,7 +144,17 @@ export const usePublisherAnalytics = () => {
         };
 
         fetchAnalytics();
-    }, [interval, startDate, endDate, selectedPublisher, selectedGroupBy]);
+    }
+
+    useEffect(() => {
+        callAllApi();
+    }, []);
+
+    useEffect(() => {
+        console.log("Updated stats", stats);
+        console.log("Updated revenue", revenue);
+        console.log("Updated completed", completed);
+    }, [stats, revenue, completed]);
 
     return {
         stats,
@@ -108,7 +162,6 @@ export const usePublisherAnalytics = () => {
         completed,
         loading,
         interval,
-        setInterval,
+        callAllApi,
     };
 };
-

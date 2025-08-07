@@ -1,1 +1,1 @@
-export type IntervalType = "daily" | "monthly" | "quarterly" | "yearly";
+export type IntervalType = null | "daily" | "monthly" | "quarterly" | "yearly";

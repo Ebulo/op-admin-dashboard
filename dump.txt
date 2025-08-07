@@ -63,3 +63,79 @@
                     </Dropdown>
                 </div>
             )} */}
+
+
+
+
+                {/* Publisher Dropdown */}
+                {/* <div className="flex flex-col min-w-[200px]">
+                    <label className="mb-1 text-sm font-medium text-gray-600 dark:text-gray-300">
+                        Publisher
+                    </label>
+                    <select
+                        value={selectedPublisher?.id || "ALL"}
+                        onChange={(e) => {
+                            const id = parseInt(e.target.value);
+                            const pub = publishers.find((p) => p.id === id) || null;
+                            setSelectedPublisher(pub);
+                        }}
+                        className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                    >
+                        <option value="ALL">Aggregate</option>
+                        {publishers.map((publisher) => (
+                            <option key={publisher.id} value={publisher.id}>
+                                {publisher.publisher_name}
+                            </option>
+                        ))}
+                    </select>
+                </div> */}
+
+
+
+                                {/* <div className="flex flex-col min-w-[200px]">
+                    <label className="mb-1 text-sm font-medium text-gray-600 dark:text-gray-300">
+                        Interval
+                    </label>
+                    <div className="flex flex-wrap gap-2 rounded-lg border border-gray-200 p-1 dark:border-gray-700">
+                        {intervals.map((intv) => (
+                            <button
+                                key={intv}
+                                onClick={() => onIntervalChange(intv)}
+                                className={classNames(
+                                    "flex-1 min-w-[70px] px-3 py-1.5 text-sm font-medium rounded-md transition",
+                                    intv === interval
+                                        ? "bg-white text-gray-900 shadow-sm dark:bg-gray-100"
+                                        : "bg-gray-100 dark:text-gray-200 text-black hover:bg-gray-200 dark:bg-white/[0.02] dark:hover:bg-white/[0.06]"
+                                )}
+                            >
+                                {intv.charAt(0).toUpperCase() + intv.slice(1)}
+                            </button>
+                        ))}
+                    </div>
+                </div> */}
+
+                                {/* <div className="flex flex-col min-w-[250px]">
+                    <label className="mb-1 text-sm font-medium text-gray-600 dark:text-gray-300">
+                        Date Range
+                    </label>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                            <DatePicker
+                                selected={startDate}
+                                onChange={(date) => setStartDate(date)}
+                                dateFormat="yyyy-MM-dd"
+                                placeholderText="Start Date"
+                                className="w-[110px] rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                            />
+                        </div>
+                        <span className="text-gray-700 dark:text-gray-300">to</span>
+                        <DatePicker
+                            selected={endDate}
+                            onChange={(date) => setEndDate(date)}
+                            dateFormat="yyyy-MM-dd"
+                            placeholderText="End Date"
+                            className="w-[110px] rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                        />
+                    </div>
+                </div> */}
