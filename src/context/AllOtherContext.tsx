@@ -19,7 +19,10 @@ interface AllOtherContextType {
 const AllOtherContext = createContext<AllOtherContextType | undefined>(undefined);
 
 export const AllOtherDetailProvider = ({ children }: { children: React.ReactNode }) => {
-    const [selectedGroupBy, setSelectedGroupBy] = useState<string>("source");
+    // let groupByFields = "null";
+    // if (typeof window !== "undefined")
+    //     groupByFields = (localStorage.getItem("groupByFields") ? JSON.parse(localStorage.getItem("groupByFields") ?? "")[0] : "null") ?? "null";
+    const [selectedGroupBy, setSelectedGroupBy] = useState<string>("null");
     const [selectedGroupByFields, setSelectedGroupByFields] = useState<number[]>([]);
     const [selectedAppIds, setSelectedAppIds] = useState<number[]>([]);
     const [selectedCountryCodes, setSelectedCountryCodes] = useState<string[]>([]);

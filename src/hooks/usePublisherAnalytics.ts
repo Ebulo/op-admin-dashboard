@@ -37,8 +37,8 @@ export const usePublisherAnalytics = () => {
 
     // const [interval, setInterval] = useState<IntervalType>("daily");
     const interval = typeof window !== "undefined"
-        ? localStorage.getItem("interval")?.toString()
-        : undefined;
+        ? localStorage.getItem("interval") ? localStorage.getItem("interval")?.toString() : "daily"
+        : "daily";
     const [loading, setLoading] = useState(false);
 
     const [stats, setStats] = useState<PublisherStats | null>(null);
@@ -53,8 +53,8 @@ export const usePublisherAnalytics = () => {
         const selectedCountryCodes = getLocalArray("countryCodes");
         const selectedPublisherIds = getLocalArray("publisherIds");
         const interval = typeof window !== "undefined"
-            ? localStorage.getItem("interval")?.toString()
-            : undefined;
+            ? localStorage.getItem("interval") ? localStorage.getItem("interval")?.toString() : "daily"
+            : "daily";
         const dateRangeRaw = typeof window !== "undefined"
             ? localStorage.getItem("dateRange")?.toString()
             : undefined;
@@ -102,7 +102,7 @@ export const usePublisherAnalytics = () => {
 
                 const groupByParam = selectedGroupByFields.length > 0
                     ? `&group_by=${selectedGroupByFields.join(",")}`
-                    : "&group_by=source";
+                    : `&group_by=${null}`;
 
                 const dateParams =
                     startDate && endDate

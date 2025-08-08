@@ -36,6 +36,7 @@ interface FilterSortBarProps {
 
 
 const groupByOptions = [
+    { label: "None", value: "null" },
     { label: "Source", value: "source" },
     { label: "Publisher", value: "publisher" },
     { label: "App", value: "app" },
@@ -110,7 +111,8 @@ export default function FilterSortBar({
                         Group By
                     </label>
                     <select
-                        value={selectedGroupBy || "source"}
+                        // value={selectedGroupBy || "null"}
+                        value={selectedGroupBy || "null"}
                         onChange={(e) => {
                             const val = e.target.value;
                             if (typeof window !== "undefined")
