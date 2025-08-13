@@ -52,6 +52,7 @@ export const usePublisherAnalytics = () => {
         const selectedAppIds = getLocalArray("appIds");
         const selectedCountryCodes = getLocalArray("countryCodes");
         const selectedPublisherIds = getLocalArray("publisherIds");
+        const selectedSources = getLocalArray("sources");
         const interval = typeof window !== "undefined"
             ? localStorage.getItem("interval") ? localStorage.getItem("interval")?.toString() : "daily"
             : "daily";
@@ -71,7 +72,7 @@ export const usePublisherAnalytics = () => {
             console.log("Parsed Dates:", startDate, endDate);
         }
 
-        const key = `${interval}-${formatDate(startDate)}-${formatDate(endDate)}-${selectedPublisherIds.join(",")}-${selectedAppIds.join(",")}-${selectedCountryCodes.join(",")}-${selectedGroupByFields.join(",")}`;
+        const key = `${interval}-${formatDate(startDate)}-${formatDate(endDate)}-${selectedPublisherIds.join(",")}-${selectedAppIds.join(",")}-${selectedCountryCodes.join(",")}-${selectedGroupByFields.join(",")}-${selectedSources}`;
 
         const shouldFetch = key !== cachedKey;
         console.log("Hey here is the logs of everything!");
@@ -96,6 +97,10 @@ export const usePublisherAnalytics = () => {
                     ? `&apps=${selectedAppIds.join(",")}`
                     : "";
 
+                const sourcesParam = selectedSources.length > 0
+                    ? `&sources=${selectedSources.join(",")}`
+                    : "";
+
                 const countriesParam = selectedCountryCodes.length > 0
                     ? `&countries=${selectedCountryCodes.join(",")}`
                     : "";
@@ -109,7 +114,7 @@ export const usePublisherAnalytics = () => {
                         ? `&start_date=${formatDate(startDate)}&end_date=${formatDate(endDate)}`
                         : "";
 
-                const queryParams = `?interval=${interval}${dateParams}${publishersParam}${appsParam}${countriesParam}${groupByParam}`;
+                const queryParams = `?interval=${interval}${dateParams}${publishersParam}${appsParam}${countriesParam}${groupByParam}${sourcesParam}`;
 
                 const [fetchedStats, fetchedRevenue, fetchedCompleted] = await Promise.all([
                     fetchDataWithAuth(`${config.apiBaseUrl}/admin/stats/${queryParams}`),

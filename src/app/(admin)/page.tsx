@@ -25,6 +25,7 @@ export default function Ecommerce() {
     if (typeof window !== "undefined") {
       localStorage.removeItem("publisherIds");
       localStorage.removeItem("appIds");
+      localStorage.removeItem("sources");
       localStorage.removeItem("countryCodes");
       localStorage.removeItem("groupByFields");
       localStorage.removeItem("dateRange");

@@ -52,6 +52,7 @@ export default function FilterSortBar({
     const [interval, setInterval] = useState<IntervalType>("daily");
 
     const [showPicker, setShowPicker] = useState(false);
+    const [step, setStep] = useState("start");
 
     const handleRangeChange = (ranges: RangeKeyDict) => {
         const { startDate, endDate } = ranges.selection;
@@ -64,6 +65,13 @@ export default function FilterSortBar({
         setStartDate(startDate as Date);
         setEndDate(endDate as Date);
         setShowPicker(false);
+
+        if (step === "start") {
+            setStep("end");
+        } else {
+            setStep("start");
+            setShowPicker(false); // Close after selecting end date
+        }
     };
 
     const selectionRange = {
@@ -159,6 +167,50 @@ export default function FilterSortBar({
                         </div>
                     )}
                 </div>
+                {/* <div className="relative min-w-[220px]">
+                    <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+                        Date Range
+                    </label>
+
+                    <button
+                        onClick={() => {
+                            setShowPicker(!showPicker);
+                            setStep("start");
+                        }}
+                        className="flex items-center justify-between w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 hover:border-blue-500 hover:shadow-sm focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 transition"
+                    >
+                        <span>
+                            {format(selectionRange.startDate, "dd/MM/yyyy")} -{" "}
+                            {format(selectionRange.endDate, "dd/MM/yyyy")}
+                        </span>
+                        <CalendarIcon className="w-4 h-4 ml-2 text-gray-500 dark:text-gray-400" />
+                    </button>
+
+                    {showPicker && (
+                        <div className="absolute z-50 mt-2 rounded-xl border bg-white shadow-2xl p-3 w-fit">
+                            <div className="mb-2 text-sm font-semibold text-blue-600">
+                                {step === "start" ? "Select start date" : "Select end date"}
+                            </div>
+                            <DateRange
+                                editableDateInputs
+                                onChange={handleRangeChange}
+                                moveRangeOnFirstSelection={false}
+                                ranges={[selectionRange]}
+                                months={1}
+                                direction="horizontal"
+                                rangeColors={["#3b82f6"]}
+                            />
+                            <div className="flex justify-end mt-2">
+                                <button
+                                    onClick={() => setShowPicker(false)}
+                                    className="px-3 py-1 text-sm rounded-md bg-gray-100 hover:bg-gray-200"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div> */}
 
                 {/* Interval Switcher */}
                 <div className="flex flex-col min-w-[200px]">

@@ -6,11 +6,14 @@ import { Publisher } from "@/types/publisher";
 import { getPublishers } from "@/api/pubLists";
 // import { useAdminPublisher } from "@/context/AdminPublisherContext";
 import { useAllContext } from "@/context/AllOtherContext";
+import { App } from "@/types/app";
+import { getApps } from "@/api/appsApi";
 
 const filterCategories = [
     { key: "publisher", label: "Publisher" },
     { key: "app", label: "App" },
     { key: "country", label: "Country" },
+    { key: "source", label: "Source" },
 ];
 
 export default function FilterDropdown() {
@@ -19,16 +22,19 @@ export default function FilterDropdown() {
     const [search, setSearch] = useState("");
 
     const [publishers, setPublishers] = useState<Publisher[]>([]);
-    const apps = [
-        { id: 1, name: "CaptchaGo" },
-        { id: 2, name: "Brainy" },
-    ];
+    const [apps, setApps] = useState<App[]>([]);
+    // const apps = [
+    //     { id: 1, app_name: "CaptchaGo" },
+    //     { id: 2, app_name: "Brainy" },
+    // ];
     const countries = ["IN", "US"];
+    const sources = ["offerpro", "offer18", "mega_offer"];
 
     const [selected, setSelected] = useState<{ [key: string]: string[] }>({
         publisher: [],
         app: [],
         country: [],
+        source: [],
     });
 
     const {
@@ -55,6 +61,9 @@ export default function FilterDropdown() {
         if (selectedCategory === "publisher") {
             getPublishers().then(setPublishers);
         }
+        if (selectedCategory == "app") {
+            getApps().then(setApps);
+        }
     }, [selectedCategory]);
 
     const getOptions = () => {
@@ -68,12 +77,17 @@ export default function FilterDropdown() {
         if (selectedCategory === "app") {
             return apps
                 .filter((app) =>
-                    app.name.toLowerCase().includes(search.toLowerCase())
+                    app.app_name.toLowerCase().includes(search.toLowerCase())
                 )
-                .map((app) => app.name);
+                .map((app) => app.app_name);
         }
         if (selectedCategory === "country") {
             return countries.filter((c) =>
+                c.toLowerCase().includes(search.toLowerCase())
+            );
+        }
+        if (selectedCategory === "source") {
+            return sources.filter((c) =>
                 c.toLowerCase().includes(search.toLowerCase())
             );
         }
@@ -127,12 +141,15 @@ export default function FilterDropdown() {
         }
         if (selectedCategory === "app") {
             const ids = apps
-                .filter((a) => updated.includes(a.name))
+                .filter((a) => updated.includes(a.app_name))
                 .map((a) => a.id);
             localStorage.setItem("appIds", JSON.stringify(ids));
         }
         if (selectedCategory === "country") {
             localStorage.setItem("countryCodes", JSON.stringify(updated));
+        }
+        if (selectedCategory === "source") {
+            localStorage.setItem("sources", JSON.stringify(updated));
         }
     };
 
@@ -156,6 +173,7 @@ export default function FilterDropdown() {
         localStorage.setItem("publisherIds", JSON.stringify([]));
         localStorage.setItem("appIds", JSON.stringify([]));
         localStorage.setItem("countryCodes", JSON.stringify([]));
+        localStorage.setItem("sources", JSON.stringify([]));
     };
 
     return (
@@ -196,7 +214,7 @@ export default function FilterDropdown() {
                                     }}
                                 >
                                     {item.label}
-                                    {selected[item.key].length > 0 && (
+                                    {selected[item.key] && selected[item.key].length > 0 && (
                                         <span className="ml-2 rounded-full bg-gray-300 px-2 text-xs dark:bg-gray-600 text-white">
                                             {selected[item.key].length}
                                         </span>
@@ -260,15 +278,23 @@ export default function FilterDropdown() {
                                                         .filter((p) => updated.includes(p.publisher_name))
                                                         .map((p) => p.id);
                                                     setSelectedPublisherIds(ids);
+                                                    localStorage.setItem("publisherIds", JSON.stringify(ids));
                                                 }
                                                 if (key === "app") {
                                                     const ids = apps
-                                                        .filter((a) => updated.includes(a.name))
+                                                        .filter((a) => updated.includes(a.app_name))
                                                         .map((a) => a.id);
                                                     setSelectedAppIds(ids);
+                                                    localStorage.setItem("appIds", JSON.stringify(ids));
                                                 }
                                                 if (key === "country") {
                                                     setSelectedCountryCodes(updated);
+                                                    localStorage.setItem("countryCodes", JSON.stringify(updated));
+
+                                                }
+                                                if (key === "source") {
+                                                    // setSelectedCountryCodes(updated);
+                                                    localStorage.setItem("sources", JSON.stringify(updated));
                                                 }
                                             }}
                                         >
