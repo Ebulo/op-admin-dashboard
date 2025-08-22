@@ -64,7 +64,7 @@ export default function FilterSortBar({
             localStorage.setItem("dateRange", JSON.stringify(dateRange))
         setStartDate(startDate as Date);
         setEndDate(endDate as Date);
-        setShowPicker(false);
+        // setShowPicker(false);
 
         if (step === "start") {
             setStep("end");
