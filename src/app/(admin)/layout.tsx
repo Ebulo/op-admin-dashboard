@@ -8,6 +8,7 @@ import AppHeader from "@/layout/AppHeader";
 import AppSidebar from "@/layout/AppSidebar";
 import Backdrop from "@/layout/Backdrop";
 import React from "react";
+import { PermissionsProvider } from "@/context/PermissionsContext";
 
 export default function AdminLayout({
   children,
@@ -30,25 +31,27 @@ export default function AdminLayout({
       : "lg:w-[90px]";
 
   return (
-    <div className="min-h-screen xl:flex">
-      {/* Sidebar and Backdrop */}
-      <AppSidebar />
-      <Backdrop />
-      {/* Main Content Area */}
-      <div
-        className={`flex-1 transition-all ${sidebarWidth} duration-300 ease-in-out ${mainContentMargin}`}
-      >
-        {/* Header */}
-        <AppHeader />
-        {/* Page Content */}
-        <AllOtherDetailProvider>
-          <AdminPublisherProvider>
-            <DateRangeProvider>
-              <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
-            </DateRangeProvider>
-          </AdminPublisherProvider>
-        </AllOtherDetailProvider>
+    <PermissionsProvider>
+      <div className="min-h-screen xl:flex">
+        {/* Sidebar and Backdrop */}
+        <AppSidebar />
+        <Backdrop />
+        {/* Main Content Area */}
+        <div
+          className={`flex-1 transition-all ${sidebarWidth} duration-300 ease-in-out ${mainContentMargin}`}
+        >
+          {/* Header */}
+          <AppHeader />
+          {/* Page Content */}
+          <AllOtherDetailProvider>
+            <AdminPublisherProvider>
+              <DateRangeProvider>
+                <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
+              </DateRangeProvider>
+            </AdminPublisherProvider>
+          </AllOtherDetailProvider>
+        </div>
       </div>
-    </div>
+    </PermissionsProvider>
   );
 }

@@ -3,7 +3,7 @@ import { BadgeCheck, CheckCircle2, CircleAlert, Clock, XCircle } from "lucide-re
 import { updateBillingStatus } from "@/api/billingApi";
 import { JSX } from "react";
 
-export const columns = (setReload: () => void) => [
+export const columns = (setReload: () => void, canChange: boolean) => [
     {
         header: "BID",
         accessor: "bid",
@@ -82,6 +82,10 @@ export const columns = (setReload: () => void) => [
                 const success = await updateBillingStatus(bill.id, nextStatus);
                 if (success) setReload();
             };
+
+            if (!canChange) {
+                return <span className="text-gray-400 italic">No actions</span>;
+            }
 
             if (bill.status === "PAID") {
                 return <span className="text-gray-400 italic">No actions</span>;

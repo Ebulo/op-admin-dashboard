@@ -8,10 +8,14 @@ import { getAdminBillings } from "@/api/billingApi";
 import { Billing } from "@/types/billing";
 import { RotateCw } from "lucide-react";
 import Button from "@/components/ui/button/Button";
+import { usePermissions } from "@/context/PermissionsContext";
 
 const STATUS_OPTIONS = ["ALL", "PENDING", "SUBMITTED", "APPROVED", "PAID"];
 
 export default function BillingTables() {
+  const { permissions, loading: permLoading } = usePermissions();
+  const canView = permissions?.sections.billing.view;
+  const canChange = permissions?.sections.billing.change;
   const [billings, setBillings] = useState<Billing[]>([]);
   const [filtered, setFiltered] = useState<Billing[]>([]);
   // const [search, setSearch] = useState("");
@@ -33,11 +37,11 @@ export default function BillingTables() {
   }, []);
 
   useEffect(() => {
-    if (!hasFetched.current) {
+    if (!hasFetched.current && !permLoading && canView) {
       fetchBillings();
       hasFetched.current = true;
     }
-  }, [fetchBillings]);
+  }, [fetchBillings, permLoading, canView]);
 
   useEffect(() => {
     // const lower = search.toLowerCase();
@@ -127,11 +131,15 @@ export default function BillingTables() {
           </div>
         }
       />
-      <BasicTableOne
-        data={filtered}
-        columns={columns(fetchBillings)}
-        showSerialNumber={true}
-      />
+      {!permLoading && !canView ? (
+        <div className="text-gray-500">You don’t have permission to view billings.</div>
+      ) : (
+        <BasicTableOne
+          data={filtered}
+          columns={columns(fetchBillings, !!canChange)}
+          showSerialNumber={true}
+        />
+      )}
     </div>
   );
 }

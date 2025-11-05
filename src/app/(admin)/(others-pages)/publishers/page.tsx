@@ -3,41 +3,50 @@
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import BasicTableOne from "@/components/tables/BasicTableOne";
 import React, { useCallback, useEffect, useState } from "react";
-import { columns as columnsFactory } from "./data";
-import { getApps } from "@/api/appsApi";
-import { App } from "@/types/app";
-import { RotateCw } from "lucide-react";
 import Button from "@/components/ui/button/Button";
+import { RotateCw } from "lucide-react";
+import { listPublishers } from "@/api/publishersApi";
+import { Publisher } from "@/types/publisher";
+import { columns } from "./data";
+import { useRouter } from "next/navigation";
 import { usePermissions } from "@/context/PermissionsContext";
 
-export default function BasicTables() {
-  const { permissions, loading: permLoading } = usePermissions();
-  const canView = permissions?.sections.apps.view;
-  const canChange = permissions?.sections.apps.change;
-  const [apps, setApps] = useState<App[]>([]);
-  const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(false);
-  // const hasFetched = useRef(false);
+export default function PublishersPage() {
+  const router = useRouter();
+  const { permissions, loading } = usePermissions();
+  const canView = permissions?.sections.publishers.view;
+  const canAdd = permissions?.sections.publishers.add;
 
-  const fetchApps = useCallback(async () => {
-    setLoading(true);
-    const data = await getApps(search);
-    setApps(data);
-    setLoading(false);
+  const [items, setItems] = useState<Publisher[]>([]);
+  const [search, setSearch] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const fetchItems = useCallback(async () => {
+    setBusy(true);
+    const data = await listPublishers(search);
+    setItems(data);
+    setBusy(false);
   }, [search]);
 
   useEffect(() => {
-    if (apps.length == 0 && !permLoading && canView) {
-      fetchApps();
-    }
-  }, [permLoading, canView]);
+    if (!loading && canView) fetchItems();
+  }, [loading, canView, fetchItems]);
 
-  const handleSearch = (query: string) => setSearch(query);
+  const handleSearch = (q: string) => setSearch(q);
+
+  if (!loading && !canView) {
+    return (
+      <div className="p-6">
+        <PageBreadcrumb pageTitle="Publishers" />
+        <div className="text-gray-500">You don’t have permission to view publishers.</div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <PageBreadcrumb
-        pageTitle="Apps"
+        pageTitle="Publishers"
         pageActions={
           <div className="flex items-center gap-2">
             <form>
@@ -61,30 +70,27 @@ export default function BasicTables() {
                 </span>
                 <input
                   type="text"
-                  placeholder="Search billing..."
+                  placeholder="Search publishers..."
                   value={search}
                   onChange={(e) => handleSearch(e.target.value)}
                   className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
                 />
-
-                <button className="absolute right-2.5 top-1/2 inline-flex -translate-y-1/2 items-center gap-0.5 rounded-lg border border-gray-200 bg-gray-50 px-[7px] py-[4.5px] text-xs -tracking-[0.2px] text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400">
-                  <span> ⌘ </span>
-                  <span> K </span>
-                </button>
               </div>
             </form>
-            <Button onClick={fetchApps} size="sm">
-              <RotateCw size={16} className={loading ? "animate-spin" : ""} />
+            <Button onClick={fetchItems} size="sm">
+              <RotateCw size={16} className={busy ? "animate-spin" : ""} />
               Refresh
             </Button>
+            {canAdd && (
+              <Button onClick={() => router.push('/publishers/create')} size="sm">
+                Add Publisher
+              </Button>
+            )}
           </div>
         }
       />
-      {!permLoading && !canView ? (
-        <div className="text-gray-500">You don’t have permission to view apps.</div>
-      ) : (
-        <BasicTableOne data={apps} columns={columnsFactory(!!canChange)} />
-      )}
+      <BasicTableOne data={items} columns={columns(permissions?.sections.publishers || {view:false,add:false,change:false,delete:false}, fetchItems)} />
     </div>
   );
 }
+

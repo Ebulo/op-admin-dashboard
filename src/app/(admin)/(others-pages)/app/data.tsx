@@ -2,6 +2,7 @@
 import { requestAppKeys } from "@/api/appsApi";
 import { OpenLink } from "@/icons";
 import { Send } from "lucide-react";
+import Link from "next/link";
 
 interface App {
     id: number,
@@ -16,7 +17,7 @@ interface App {
     publisher: number,
 }
 
-export const columns = [
+export const columns = (canChange: boolean) => [
     {
         header: "App Name",
         accessor: "app_name",
@@ -34,10 +35,10 @@ export const columns = [
                         }}
                     />
                 </div>
-                <div style={{ display: "flex", flexDirection: "column" }}>
+                <Link href={`/app/${app.id}`} style={{ display: "flex", flexDirection: "column" }}>
                     <span style={{ fontWeight: "bold" }}>{app.app_name}</span>
                     <span style={{ fontSize: "0.8em", color: "#888" }}>{app.unique_app_key}</span>
-                </div>
+                </Link>
             </div>
         ),
     },
@@ -66,5 +67,17 @@ export const columns = [
                 </button>
             </div>
         ),
-    }
+    },
+    {
+        header: "Actions",
+        accessor: "id",
+        render: (app: App) => (
+            <div className="flex justify-end gap-2">
+                <Link href={`/app/${app.id}`} className="text-sm bg-gray-100 dark:bg-white/10 px-3 py-1 rounded">View</Link>
+                {canChange && (
+                    <Link href={`/app/${app.id}`} className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">Edit</Link>
+                )}
+            </div>
+        ),
+    },
 ];

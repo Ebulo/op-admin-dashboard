@@ -23,7 +23,6 @@ interface SortOption {
     value: string;
 }
 
-
 const intervals: IntervalType[] = [null, "daily", "monthly", "quarterly", "yearly"];
 interface FilterSortBarProps {
     filters?: FilterOption[];
@@ -33,7 +32,6 @@ interface FilterSortBarProps {
     onDateChange?: (date: Date) => void;
     callAllApi: () => void;
 }
-
 
 const groupByOptions = [
     { label: "None", value: "null" },

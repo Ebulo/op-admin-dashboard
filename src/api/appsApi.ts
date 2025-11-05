@@ -120,3 +120,57 @@ export const requestAppKeys = async (appId: number): Promise<boolean> => {
         return false;
     }
 };
+
+export const getApp = async (id: number): Promise<App | null> => {
+  const token = getToken();
+  if (!token) {
+    toast.error("Not authenticated. Please sign in.", { position: "bottom-right" });
+    return null;
+  }
+  try {
+    const res = await fetch(`${config.apiBaseUrl}/admin/apps/${id}/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) {
+      if (res.status === 403) {
+        toast.error("You don’t have permission to view this app.", { position: "bottom-right" });
+        return null;
+      }
+      throw new Error("Failed to fetch app");
+    }
+    return (await res.json()) as App;
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "Something went wrong";
+    toast.error(msg, { position: "bottom-right" });
+    return null;
+  }
+};
+
+export const updateApp = async (id: number, payload: Partial<Omit<App, 'id' | 'unique_app_key' | 'publisher'>>): Promise<boolean> => {
+  const token = getToken();
+  if (!token) {
+    toast.error("Not authenticated. Please sign in.", { position: "bottom-right" });
+    return false;
+  }
+  try {
+    const res = await fetch(`${config.apiBaseUrl}/admin/apps/${id}/`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      if (res.status === 403) {
+        toast.error("You don’t have permission to edit this app.", { position: "bottom-right" });
+        return false;
+      }
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.detail || 'Failed to update app');
+    }
+    toast.success('App updated', { position: 'bottom-right' });
+    return true;
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "Something went wrong";
+    toast.error(msg, { position: "bottom-right" });
+    return false;
+  }
+};

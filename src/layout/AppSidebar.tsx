@@ -11,8 +11,10 @@ import {
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
+  GroupIcon,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
+import { usePermissions } from "@/context/PermissionsContext";
 
 type NavItem = {
   name: string;
@@ -21,30 +23,8 @@ type NavItem = {
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
-const navItems: NavItem[] = [
-  {
-    icon: <GridIcon />,
-    name: "Dashboard",
-    path: "/",
-  },
-  {
-    icon: <AppIcon />,
-    name: "Apps",
-    path: "/app",
-  },
-  {
-    icon: <BillingIcon />,
-    name: "Billings",
-    path: "/billing",
-  },
-  // {
-  //   name: "Pages",
-  //   icon: <PageIcon />,
-  //   subItems: [
-  //     { name: "Blank Page", path: "/blank", pro: false },
-  //     { name: "404 Error", path: "/error-404", pro: false },
-  //   ],
-  // },
+const staticNavItems: NavItem[] = [
+  { icon: <GridIcon />, name: "Dashboard", path: "/" },
 ];
 
 const othersItems: NavItem[] = [
@@ -60,6 +40,20 @@ const othersItems: NavItem[] = [
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { permissions } = usePermissions();
+  const navItems: NavItem[] = React.useMemo(() => {
+    const items: NavItem[] = [...staticNavItems];
+    if (permissions?.sections.apps.view) {
+      items.push({ icon: <AppIcon />, name: "Apps", path: "/app" });
+    }
+    if (permissions?.sections.publishers.view) {
+      items.push({ icon: <GroupIcon />, name: "Publishers", path: "/publishers" });
+    }
+    if (permissions?.sections.billing.view) {
+      items.push({ icon: <BillingIcon />, name: "Billings", path: "/billing" });
+    }
+    return items;
+  }, [permissions]);
   const pathname = usePathname();
 
   const renderMenuItems = (
