@@ -174,3 +174,54 @@ export const updateApp = async (id: number, payload: Partial<Omit<App, 'id' | 'u
     return false;
   }
 };
+
+export type CreateAppPayload = {
+  app_name: string;
+  app_link: string;
+  postback_url: string;
+  dollar_equivalent: number;
+  app_image_url?: string;
+  allow_decimal?: boolean;
+  publisher?: number; // optional; backend can use ?publisher_id if not provided
+};
+
+export type CreatedAppWithKeys = App & {
+  secret_key?: string;
+  enc_key?: string;
+};
+
+export const createApp = async (
+  payload: CreateAppPayload,
+  opts?: { publisher_id?: number }
+): Promise<CreatedAppWithKeys | null> => {
+  const token = getToken();
+  if (!token) {
+    toast.error("Not authenticated. Please sign in.", { position: "bottom-right" });
+    return null;
+  }
+  try {
+    const params = new URLSearchParams();
+    if (opts?.publisher_id && !payload.publisher) params.set('publisher_id', String(opts.publisher_id));
+
+    const res = await fetch(`${config.apiBaseUrl}/admin/apps/${params.toString() ? `?${params}` : ''}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      if (res.status === 403) {
+        toast.error("You don’t have permission to add apps.", { position: "bottom-right" });
+        return null;
+      }
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.detail || 'Failed to create app');
+    }
+    const data = (await res.json()) as CreatedAppWithKeys;
+    toast.success('App created', { position: 'bottom-right' });
+    return data;
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "Something went wrong";
+    toast.error(msg, { position: "bottom-right" });
+    return null;
+  }
+};

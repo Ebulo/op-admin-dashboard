@@ -9,8 +9,10 @@ import { App } from "@/types/app";
 import { RotateCw } from "lucide-react";
 import Button from "@/components/ui/button/Button";
 import { usePermissions } from "@/context/PermissionsContext";
+import { useRouter } from "next/navigation";
 
 export default function BasicTables() {
+  const router = useRouter();
   const { permissions, loading: permLoading } = usePermissions();
   const canView = permissions?.sections.apps.view;
   const canChange = permissions?.sections.apps.change;
@@ -61,7 +63,7 @@ export default function BasicTables() {
                 </span>
                 <input
                   type="text"
-                  placeholder="Search billing..."
+                  placeholder="Search apps..."
                   value={search}
                   onChange={(e) => handleSearch(e.target.value)}
                   className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
@@ -77,6 +79,11 @@ export default function BasicTables() {
               <RotateCw size={16} className={loading ? "animate-spin" : ""} />
               Refresh
             </Button>
+            {canChange && (
+              <Button onClick={() => router.push('/app/create')} size="sm">
+                Add App
+              </Button>
+            )}
           </div>
         }
       />
