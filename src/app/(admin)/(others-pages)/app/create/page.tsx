@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import Button from "@/components/ui/button/Button";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -9,7 +9,7 @@ import { createApp, CreatedAppWithKeys, CreateAppPayload } from "@/api/appsApi";
 import { listPublishers } from "@/api/publishersApi";
 import { Publisher } from "@/types/publisher";
 
-export default function CreateAppPage() {
+function CreateAppForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { permissions } = usePermissions();
@@ -185,3 +185,10 @@ export default function CreateAppPage() {
   );
 }
 
+export default function CreateAppPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-gray-500">Loading...</div>}>
+      <CreateAppForm />
+    </Suspense>
+  );
+}
