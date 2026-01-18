@@ -9,6 +9,8 @@ export interface DashboardPermissions {
   is_staff: boolean;
   email: string;
   allowed_routes: string[];
+  assigned_app_ids?: number[];
+  assigned_apps?: { id: number; app_name: string }[];
   sections: {
     publishers: SectionPerms;
     apps: SectionPerms;
@@ -17,4 +19,3 @@ export interface DashboardPermissions {
     // Extendable: add more sections if backend adds them
   };
 }
-

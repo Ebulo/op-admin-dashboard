@@ -12,6 +12,7 @@ import {
   GridIcon,
   HorizontaLDots,
   GroupIcon,
+  TaskIcon,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
 import { usePermissions } from "@/context/PermissionsContext";
@@ -51,6 +52,9 @@ const AppSidebar: React.FC = () => {
     }
     if (permissions?.sections.billing.view) {
       items.push({ icon: <BillingIcon />, name: "Billings", path: "/billing" });
+    }
+    if (permissions?.sections.postbacks.view) {
+      items.push({ icon: <TaskIcon />, name: "Postbacks", path: "/postbacks" });
     }
     return items;
   }, [permissions]);
